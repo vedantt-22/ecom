@@ -1,0 +1,121 @@
+---Passport.ts---
+
+// What is this file?
+//
+// This file configures Passport's JWT strategy — the set of
+// rules Passport follows every time it needs to authenticate
+// a request. It defines:
+//   1. WHERE to find the JWT (cookie extractor)
+//   2. HOW to verify it (secret key)
+//   3. WHAT extra checks to run (session + lock check)
+//   4. WHAT to attach to req.user when all checks pass
+─────────────────────────────────────────────────────────────
+// ── EXPORTED CONSTANTS ────────────────────────────────────────
+// These are exported so auth.routes.ts and other files
+// use the EXACT same values. If you change the cookie name
+// from "token" to "authToken", you change it here only —
+// every other file picks it up automatically.
+
+
+// ── COOKIE EXTRACTOR ──────────────────────────────────────────
+// Passport-JWT ships with extractors for Authorization headers
+// and URL query params — but NOT for cookies.
+// So we write our own.
+//
+// An extractor is simply a function that:
+//   - receives the Express Request object
+//   - returns the JWT string if found
+//   - returns null if not found
+//
+// Passport calls this function automatically before running
+// the strategy's verify callback.
+
+
+// req.cookies is populated by the cookie-parser middleware.
+// Without cookie-parser in app.ts, req.cookies would be undefined.
+
+// req.cookies is an object: { token: "eyJhbGc...", ... }
+// We return the value at COOKIE_NAME, or null if absent.
+
+  jwtFromRequest:   cookieExtractor,  // use our custom extractor
+  secretOrKey:      JWT_SECRET,       // the secret used to verify signature
+  passReqToCallback: true,            // include req in verify callback
+  // passReqToCallback: true is important because we want to
+  // record the IP address in the session. req.ip gives us that.
+
+/ ── THE STRATEGY ──────────────────────────────────────────────
+// passport.use() registers the strategy globally.
+// From this point on, whenever any code calls
+// passport.authenticate('jwt', ...), this strategy runs.
+//
+// The verify callback is called ONLY AFTER Passport has:
+//   ✓ Successfully extracted the JWT from the cookie
+//   ✓ Verified the JWT signature using JWT_SECRET
+//   ✓ Confirmed the token has not expired
+//
+// If any of those fail, Passport rejects before reaching here.
+// Our callback handles the APPLICATION-LEVEL checks.
+
+ // ── CHECK 1: Session must exist in the Map ───────────
+        // Even a perfectly valid JWT is REJECTED if its jti
+        // is not in the session store.
+        //
+        // This is the account-lock mechanism.
+        // When admin locks a user, deleteAllForUser() removes
+        // all their jtis. The next request fails here.
+
+// done(error, user, info)
+// null error, false user = authentication failed'
+
+        // ── CHECK 2: Load user from database ─────────────────
+        // We do not fully trust the JWT payload.
+        // The user's isLocked status could have changed since
+        // they logged in. We reload from DB to get current state.
+        //
+        // select: [...] means only fetch these specific columns.
+        // This avoids loading passwordHash unnecessarily.
+
+// ── CHECK 3: Account lock check ───────────────────────
+        // This is a belt-AND-suspenders check.
+        // The session Map check above handles the case where
+        // admin locked the user AND called deleteAllForUser.
+        // This check handles the edge case where isLocked was
+        // set but the session was not yet deleted.
+
+
+        // ── ALL CHECKS PASSED ─────────────────────────────────
+        // Attach the user to req.user.
+        // We include jti so route handlers (like logout)
+        // can access it without re-parsing the JWT.
+        //
+        // done(null, user) = success, attach this as req.user
+
+---Auth.Middleware---
+
+1. requireAuth Function
+This function checks if the user is Authenticated (Who are you? Do you have a valid ID card/JWT?).
+
+Line-by-Line Breakdown:
+passport.authenticate("jwt", { session: false }, ...): We tell Passport to use the JWT strategy. We set session: false because we aren't using old-school cookies/sessions; we are using modern Tokens.
+
+The Callback (err, user, info):
+
+err: If the database crashes or something explodes, we return a 500 Internal Server Error.
+
+!user: If the token is expired, fake, or missing, we return a 401 Unauthorized. We send a JSON message so your Angular frontend knows exactly why the login failed.
+
+req.user = user: This is a crucial step. If the user is valid, we "attach" them to the request object. Now, every following function knows exactly which user is making the request.
+
+next(): This tells Express: "Everything looks good, move to the next function in line."
+
+)(req, res, next): This looks weird, right? passport.authenticate actually creates a function. This final part immediately executes that function with the current request details.
+
+2. requireRole Function
+This is a Middleware Factory. It doesn't just check if you are logged in; it checks if you are Authorized (Are you an Admin? A Customer?).
+
+export function requireRole(...allowedRoles: string[]): The ... is a "rest parameter." It allows you to pass one or many roles (e.g., requireRole("admin", "manager")).
+return (req, res, next) => { ... }: This function creates another function. We do this so we can "save" the allowedRoles inside the middleware.
+const user = req.user as any: It grabs the user we attached earlier in requireAuth.
+!allowedRoles.includes(user.role): It checks: "Is the user's role in the list of roles allowed for this specific route?"
+res.status(403): If a regular customer tries to enter the /admin panel, they get a 403 Forbidden.
+Note: 401 means "I don't know who you are." 403 means "I know who you are, but you aren't allowed in here."

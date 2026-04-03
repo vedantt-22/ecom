@@ -1,0 +1,60 @@
+httpOnly: true
+What it does: Prevents "Client-side" JavaScript (like your Angular code) from accessing the cookie via document.cookie.
+Why use it: This is your primary defense against XSS (Cross-Site Scripting). If a hacker manages to run a malicious script on your site, they still can't "read" the cookie to steal the user's login token. Only the browser can see it and send it to the server.
+
+Multer handles multipart/form-data requests — the format
+browsers use when uploading files. This file configures:
+WHERE to save uploaded files (ProductImages folder)
+WHAT to name them (unique timestamp-based names)
+WHICH files to accept (images only)
+HOW LARGE files can be (5MB max)
+
+── Storage Configuration 
+diskStorage tells Multer to save files to the filesystem.
+The alternative (memoryStorage) keeps files in RAM as a Buffer —
+useful for cloud uploads but wasteful for local storage.
+The Choice: You chose diskStorage over memoryStorage.
+
+Why: memoryStorage stores the file as a "Buffer" in your server's RAM. If 10 users upload 5MB images at once, your server uses 50MB of RAM instantly. diskStorage streams the file directly to your folder (ProductImages), which is much safer for your server's health.
+
+path.join
+Why path.join? Windows uses backslashes (\) and Linux/Mac uses forward slashes (/). path.join automatically detects the Operating System so your code doesn't break when you move it from your Windows PC to a Linux cloud server.
+
+The Filename (The Security "Why")
+TypeScript
+callback(null, `${file.fieldname}-${uniqueSuffix}${extension}`);
+The Problem: If two users upload iphone.jpg, the second one would overwrite the first.
+
+The Solution: By adding Date.now(), you ensure every filename is unique (e.g., image-1711952907.jpg).
+
+Security: Using the original filename is dangerous because a hacker could name a file ../../../index.js to try and overwrite your server code. Generating your own name prevents this "Path Traversal" attack.
+
+
+2. Why Multer?
+Multer is the go-to choice because:
+
+Efficiency: It uses "Busboy" under the hood, which is extremely fast at parsing multipart data.
+
+Express Integration: It fits perfectly as a middleware. You just put upload.single('image') in your route, and it handles everything before the controller even starts.
+
+Flexibility: It can handle one file (.single()), multiple files (.array()), or a mix of fields (.fields()).
+
+
+Feature,Technical Reason,User Benefit
+Multipart Parsing,Standard JSON can't hold binary files.,Users can upload real images.
+Timestamp Naming,Prevents filename collisions.,Users' photos never get overwritten.
+MIME Type Check,Security against scripts/executables.,The website stays safe from hackers.
+5MB Limit,Storage management.,The server stays fast and doesn't run out of space.
+
+Multer Working 
+1. How it works (The Logic)
+When a file arrives at your server, Multer pauses and runs your fileFilter function. It provides you with a callback (which is of type FileFilterCallback).
+
+You must execute this callback to move to the next step:
+To Accept: callback(null, true)
+(Error is null, Accept is true)
+To Reject: callback(null, false)=
+(Error is null, Accept is false — the file is ignored silently)
+To Reject with an Error: callback(new Error("Reason..."))
+(Multer stops everything and sends this error to your Express error handler)
+
