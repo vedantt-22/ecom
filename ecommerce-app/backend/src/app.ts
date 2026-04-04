@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
 import cookieParser from "cookie-parser";
 import passport from "./passport";
+import taxonomyRoutes from "./routes/taxonomy.routes";
+import productRoutes from "./routes/product.routes";
 
 dotenv.config();
 
@@ -35,6 +37,10 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.use("/api/auth", authRoutes);
+app.use("/api/taxonomy", taxonomyRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
+
 
 
 // --- API Routes (will be added in later steps) ---
