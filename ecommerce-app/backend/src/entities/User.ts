@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   OneToOne,
   OneToMany,
+  Index,
 } from "typeorm";
 import { Cart } from "./Cart";
 import { Order } from "./Order";
@@ -25,6 +26,8 @@ declare global {
 }
 
 @Entity("users")
+@Index(["email"])          // looked up on every login
+@Index(["role"])  
 export class User {
 
   @PrimaryGeneratedColumn()
@@ -50,7 +53,7 @@ export class User {
   isLocked!: boolean;
 
   @CreateDateColumn()
-  createdAt!: Date;
+  createdAt!: Date;  
 
   @OneToOne(() => Cart, (cart) => cart.user, { cascade: true })
   cart!: Cart;

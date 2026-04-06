@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
+import compression from "compression";
 import path from "path";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
@@ -7,6 +8,13 @@ import cookieParser from "cookie-parser";
 import passport from "./passport";
 import taxonomyRoutes from "./routes/taxonomy.routes";
 import productRoutes from "./routes/product.routes";
+import cartRoutes from "./routes/cart.routes";
+import orderRoutes from "./routes/order.routes";
+import adminRoutes from "./routes/admin.routes";
+import profileRoutes from "./routes/profile.routes";
+import searchRoutes from "./routes/search.routes";
+import helmet from "helmet";
+
 
 dotenv.config();
 
@@ -39,7 +47,11 @@ if (process.env.NODE_ENV === "production") {
 app.use("/api/auth", authRoutes);
 app.use("/api/taxonomy", taxonomyRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/profile", profileRoutes);
+app.use("/api/search", searchRoutes);
 
 
 
@@ -52,6 +64,21 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({ error: "Something went wrong on our end!" });
 });
+
+
+
+app.use(helmet({
+  // crossOriginResourcePolicy must be set to cross-origin
+  // so express.static can serve product images to Angular
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
+
+
+app.use(compression({
+  // Only compress responses larger than 1KB
+  // Compressing tiny responses wastes CPU
+  threshold: 1024,
+}));
 
 // --- Angular catch-all (Step 20) ---
 // Must be LAST - after all API routes

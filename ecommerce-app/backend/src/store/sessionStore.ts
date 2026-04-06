@@ -77,6 +77,13 @@ class SessionStore {
     }
   }
 
+
+  // Inside the SessionStore class:
+  get size(): number {
+    return this.sessions.size;
+  }
+
+  
   // ── DELETE ALL FOR USER ───────────────────────────────────
 
   deleteAllForUser(userId: number): void {

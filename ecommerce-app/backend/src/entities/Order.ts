@@ -1,6 +1,7 @@
 import {
   Entity, PrimaryGeneratedColumn, Column,
-  ManyToOne, OneToMany, JoinColumn, CreateDateColumn
+  ManyToOne, OneToMany, JoinColumn, CreateDateColumn,
+  Index
 } from "typeorm";
 import { User } from "./User";
 import { OrderItem } from "./OrderItem";
@@ -8,10 +9,18 @@ import { OrderItem } from "./OrderItem";
 export type PaymentMethod =
   | "credit_card"
   | "debit_card"
-  | "cash_on_delivery"
+  | "pay_on_delivery"
   | "bank_transfer";
 
+export type OrderStatus =
+  | "pending"
+  | "processing"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
+
 @Entity("orders")
+@Index(["createdAt"])
 export class Order {
 
   @PrimaryGeneratedColumn()
@@ -30,8 +39,16 @@ export class Order {
   })
   paymentMethod!: PaymentMethod;
 
+  @Column({
+    type: "varchar",
+    length: 50,
+    default: "pending"
+  })
+  status!: OrderStatus;
+
   @CreateDateColumn()
   createdAt!: Date;
+
 
   @ManyToOne(() => User, (user) => user.orders, {
     nullable: false,

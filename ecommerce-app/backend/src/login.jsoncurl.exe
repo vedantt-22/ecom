@@ -1,0 +1,1 @@
+{"email":"customer@test.com","password":"Customer@123"} -i -X POST "http://localhost:3000/api/auth/login" -H "Content-Type: application/json" --data-binary "@login.json" -c customer-cookies.txt

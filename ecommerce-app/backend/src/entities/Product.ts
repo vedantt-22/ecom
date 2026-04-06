@@ -1,10 +1,16 @@
 import {
   Entity, PrimaryGeneratedColumn, Column,
-  ManyToOne, JoinColumn, CreateDateColumn
+  ManyToOne, JoinColumn, CreateDateColumn,
+  Index
 } from "typeorm";
 import { SubCategory } from "./SubCategory";
 
 @Entity("products")
+@Index(["name"])  // for search optimization
+@Index(["price"]) // for price range queries
+@Index(["stock"]) // for stock availability queries
+
+
 export class Product {
 
   @PrimaryGeneratedColumn()

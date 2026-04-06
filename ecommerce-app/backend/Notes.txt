@@ -58,3 +58,5 @@ To Reject: callback(null, false)=
 To Reject with an Error: callback(new Error("Reason..."))
 (Multer stops everything and sends this error to your Express error handler)
 
+Why Query Builder ?
+For simple queries, repository methods are fine. For search with multiple optional filters that can be combined in any combination, QueryBuilder is the right tool. It lets you build the query piece by piece conditionally — only adding a filter clause if that filter was actually provided.
