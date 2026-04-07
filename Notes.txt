@@ -60,3 +60,17 @@ To Reject with an Error: callback(new Error("Reason..."))
 
 Why Query Builder ?
 For simple queries, repository methods are fine. For search with multiple optional filters that can be combined in any combination, QueryBuilder is the right tool. It lets you build the query piece by piece conditionally — only adding a filter clause if that filter was actually provided.
+
+Environment.ts
+  In development, Angular runs on port 4200 and the
+  Express API runs on port 3000. All API calls go to 3000.
+  Local coding, debugging, and testing.
+  Detailed (verbose) logs for debugging.
+
+Environment.prod.ts
+  In production, Angular is served by Express on port 3000.
+  The API is on the same origin — no cross-origin issues.
+  '/api' is a relative URL — works regardless of domain.
+  Live hosting (AWS, Vercel, Heroku).
+  Minimal logs to save performance/security.
+
