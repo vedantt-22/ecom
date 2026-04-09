@@ -12,8 +12,8 @@ const subCategoryRepo = () => AppDataSource.getRepository(SubCategory);
 const categoryRepo = () => AppDataSource.getRepository(Category);
 
 function buildImageUrl(imagePath: string | null): string {
-    if(!imagePath) return "/ProductImages/placeholder.png";
-    return `/ProductImages/${path.basename(imagePath)}`;
+    if(!imagePath) return "/images/placeholder.png";
+    return `/images/${path.basename(imagePath)}`;
 }
 
 function deleteImageFile(filename: string | null): void {

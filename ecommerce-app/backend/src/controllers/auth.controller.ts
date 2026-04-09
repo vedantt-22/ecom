@@ -104,7 +104,7 @@ export class AuthController {
 
       res.status(200).json({ message: "All sessions terminated." });
   });
-  // FORGOT PASSWORD
+  // FORGET PASSWORD
   forgetPassword = asyncHandler(async (req: Request, res: Response): Promise<void> => {
       const { email } = req.body;
 
@@ -118,8 +118,32 @@ export class AuthController {
         message: result.message,
         // Only present if user was found and code was generated
         ...(result.code && { code: result.code }),
+        ...(result.expiresAt && { expiresAt: result.expiresAt }),
       });
   });
+
+  getResetCode = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+      const { email } = req.body;
+
+      if (!email) {
+        res.status(400).json({ error: "Email is required." });
+        return;
+      }
+
+      const result = await authService.getResetCode(email);
+
+      if (!result.success) {
+        res.status(result.statusCode).json({ error: result.message });
+        return;
+      }
+
+      res.status(result.statusCode).json({
+        message: result.message,
+        code: result.code,
+        expiresAt: result.expiresAt,
+      });
+  });
+
   // RESET PASSWORD
   resetPassword = asyncHandler(async (req: Request, res: Response): Promise<void> => {
       const { email, code, newPassword } = req.body;

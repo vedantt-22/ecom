@@ -13,10 +13,10 @@ const router = Router();
 router.get("/", productController.getAllProducts);
 
 
-router.get("/:id", productController.getProductById);
-
-
 router.get("/subcategory/:subCategoryId", productController.getProductsBySubCategory);
+
+
+router.get("/:id", productController.getProductById);
 
 // ── Admin-only write routes ───────────────────────────────────
 // upload.single("image") is Multer middleware.

@@ -1,0 +1,89 @@
+/* src/app/app.component.css */
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 60px;
+  background: #1a1a2e;
+  color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.nav-name a {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #dedb2f;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+.nav-items {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  cursor: pointer;
+}
+
+.nav-items a {
+  color: #cccccc;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.nav-items a:hover,
+.nav-items a.active {
+  color: #ffffff;
+}
+
+.nav-items a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #e94560;
+  border-radius: 2px;
+}
+
+.cart-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e94560;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid #e94560;
+  color: #e94560;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  background: #e94560;
+  color: white;
+}
+
+.main {
+  min-height: calc(100vh - 60px);
+  background: #f8f9fa;
+}

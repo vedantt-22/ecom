@@ -74,3 +74,18 @@ Environment.prod.ts
   Live hosting (AWS, Vercel, Heroku).
   Minimal logs to save performance/security.
 
+UrlTree: In older Angular, we used to manually call router.navigate(). In modern Angular, returning a UrlTree is the preferred way. It tells the router: "Stop going where you were going, and go here instead."
+
+QueryBuilder
+It is used for writing dynamic SQL queries rather tha normal SQL strings.
+It prevents SQL Injection which is writing malicious code in SQL.
+Better readability (for complex queries) Joins Subqueries Aggregations.
+Database abstraction - Works across PostgreSQL, MySQL, etc.
+
+SQL Injection = injecting malicious SQL via user input
+Prevent using:
+Parameterized queries
+ORM / QueryBuilder
+
+event.stopPropagtion() -> 
+

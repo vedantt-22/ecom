@@ -1,0 +1,32 @@
+<div class="verify-container">
+    <div class="verify-card">
+
+        <div class="verify-header">
+            <h1>Check Your Code</h1>
+            <p>A reset code has been generated for {{ email }}</p>
+        </div>
+
+        <div class="alert alert-error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+        <div *ngIf="!codeShown" class="code-message">
+            <p class="text-message">Please click the button below to view your reset code.</p>
+
+            <button class="btn btn-primary" (click)="showCode()" [disabled]="isLoading">
+
+            <span *ngIf="isLoading">Retrieving code...</span>
+            </button>
+        </div>
+
+        <div class="code-display" *ngIf="codeShown">
+            <p class="code-label">
+                Your reset code is: <span class="code">{{ code }}</span>
+            </p>
+
+            <button class="btn btn-primary" (click)="proceedToResest()">Continue to reset Code</button>
+        </div>
+
+        <div class="verify-forget">
+            Don't have an account? <a routerLink="/forget-password">Request a New Code</a>
+        </div>
+    </div>
+</div>

@@ -148,7 +148,7 @@ export class AuthService {
         // Always return the same response whether the email
         // exists or not. Prevents user enumeration.
         if(!user) {
-            return {success: false, statusCode: 404, message: "If an account with that email exists, a password reset code has been sent."};  
+            return {success: true, statusCode: 200, message: "If an account with that email exists, a password reset code has been sent."};
         }
 
         await resetRepo().update(
@@ -173,9 +173,51 @@ export class AuthService {
             success:    true,
             statusCode: 200,
             code,
+            expiresAt,
             message: "Reset code generated.",
         };
     }
+
+    async getResetCode(email: string) {
+        const cleanEmail = validateInput(email).toLowerCase();
+
+        const user = await userRepo().findOne({
+            where: { email: cleanEmail }
+        });
+
+        if (!user) {
+            return {
+                success: false,
+                statusCode: 404,
+                message: "No active reset code found."
+            };
+        }
+
+        const activeCode = await resetRepo().findOne({
+            where: {
+                user: { id: user.id },
+                used: false,
+            },
+            order: { createdAt: "DESC" }
+        });
+
+        if (!activeCode || new Date() > activeCode.expiresAt) {
+            return {
+                success: false,
+                statusCode: 404,
+                message: "No active reset code found."
+            };
+        }
+
+        return {
+            success: true,
+            statusCode: 200,
+            message: "Reset code retrieved.",
+            code: activeCode.code,
+            expiresAt: activeCode.expiresAt,
+        };
+    }
+
     // Reset password using the code sent to email
     async resetPassword(email: string, code: string, newPassword: string) {
         if(!validatePassword(newPassword)) {

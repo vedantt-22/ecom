@@ -9,9 +9,9 @@ const productRepo = () => AppDataSource.getRepository(Product);
 
 function buildImageUrl(imagePath: string | null): string {
     if (!imagePath) {
-        return "ProductImages/placeholder.png";
+        return "/images/placeholder.png";
     }
-    return `ProductImages/${imagePath}`;
+    return `/images/${imagePath}`;
 }
 
 function formatCart(cart: Cart) {

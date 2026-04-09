@@ -1,0 +1,8 @@
+post: Sends sensitive data (password) in the request body, not the URL.
+
+.pipe(): A container for RxJS operators.
+
+tap(): This is a "side-effect" operator. It says: "When the login is successful, take a copy of the user data and save it in our BehaviorSubject before passing the response to the component." This ensures the whole app knows the user is now logged in.
+
+next(null) -> Empty (logout / Clear anything)
+next(user) -> Login

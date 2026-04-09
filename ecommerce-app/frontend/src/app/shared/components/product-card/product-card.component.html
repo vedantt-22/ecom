@@ -1,0 +1,47 @@
+<!-- product-card.component.html -->
+<div class="product-card">
+  <a [routerLink]="['/products', product.id]" class="card-link">
+
+    <div class="card-image">
+      <img
+        [src]="product.imageUrl"
+        [alt]="product.name"
+        loading="lazy"
+        (error)="product.imageUrl = '/images/placeholder.png'"
+      />
+      <span class="out-of-stock-badge" *ngIf="product.stock === 0">
+        Out of stock
+      </span>
+    </div>
+
+    <div class="card-body">
+      <div class="card-taxonomy">
+        {{ product.subCategory | productTaxonomy }}
+      </div>
+
+      <h3 class="card-title">{{ product.name }}</h3>
+
+      <div class="card-footer">
+        <span class="card-price">
+          ₹{{ product.price | number:'1.2-2' }}
+        </span>
+        <ng-container *ngIf="authService.isCustomer">
+          <button
+            class="btn-add-cart"
+            (click)="addToCart($event)"
+            [disabled]="isAddingToCart || product.stock === 0"
+            [class.added]="addedToCart"
+          >
+            <span *ngIf="!isAddingToCart && !addedToCart">Add to cart</span>
+            <span *ngIf="isAddingToCart">Adding...</span>
+            <span *ngIf="addedToCart">Added!</span>
+          </button>
+        </ng-container>
+
+      </div>
+
+      <p class="card-error" *ngIf="errorMsg">{{ errorMsg }}</p>
+    </div>
+
+  </a>
+</div>

@@ -1,0 +1,56 @@
+<!-- pagination.component.html -->
+<div class="pagination-container" *ngIf="totalPages > 1">
+
+  <p class="pagination-info">
+    Showing {{ startItem }}–{{ endItem }} of {{ total }} results
+  </p>
+
+  <div class="pagination-controls">
+
+    <button
+      class="page-btn"
+      (click)="goToPage(currentPage - 1)"
+      [disabled]="currentPage === 1"
+    >
+      &#8249;
+    </button>
+
+    <button
+      *ngIf="pages[0] > 1"
+      class="page-btn"
+      (click)="goToPage(1)"
+    >
+      1
+    </button>
+
+    <span *ngIf="pages[0] > 2" class="showPages">...</span>
+
+    <button
+      *ngFor="let page of pages"
+      class="page-btn"
+      [class.active]="page === currentPage"
+      (click)="goToPage(page)"
+    >
+      {{ page }}
+    </button>
+
+    <span *ngIf="pages[pages.length - 1] < totalPages - 1" class="showPages">...</span>
+
+    <button
+      *ngIf="pages[pages.length - 1] < totalPages"
+      class="page-btn"
+      (click)="goToPage(totalPages)"
+    >
+      {{ totalPages }}
+    </button>
+
+    <button
+      class="page-btn"
+      (click)="goToPage(currentPage + 1)"
+      [disabled]="currentPage === totalPages"
+    >
+      &#8250;
+    </button>
+
+  </div>
+</div>

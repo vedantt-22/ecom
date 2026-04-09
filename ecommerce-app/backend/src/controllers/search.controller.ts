@@ -11,16 +11,14 @@ export class SearchController {
       sortBy, sortOrder, page, pageSize,
     } = req.query;
 
-    if (typeId === undefined) {
-      res.status(400).json({ message: "typeId is required" });
-      return;
-    }
+    let parsedTypeId: number | undefined;
 
-    const parsedTypeId = Number(typeId);
-
-    if (Number.isNaN(parsedTypeId)) {
-      res.status(400).json({ message: "typeId must be a valid number" });
-      return;
+    if (typeId !== undefined) {
+      parsedTypeId = Number(typeId);
+      if (Number.isNaN(parsedTypeId)) {
+        res.status(400).json({ message: "typeId must be a valid number" });
+        return;
+      }
     }
 
     const result = await searchService.searchProducts({

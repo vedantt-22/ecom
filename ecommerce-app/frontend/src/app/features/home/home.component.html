@@ -1,0 +1,91 @@
+<section class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title">Find Everything<br>You Need</h1>
+    <p class="hero-subtitle">
+      Explore thousands of products across Electronics, Stationery, Furniture and more.
+    </p>
+
+    <div class="hero-search">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (keyup.enter)="onSearch()"
+        placeholder="Search for products..."
+        class="hero-search-input"
+      />
+      <button class="hero-search-btn" (click)="onSearch()">Search</button>
+    </div>
+  </div>
+</section>
+
+<section class="categories-section container">
+  <h2 class="section-title">Browse by Category</h2>
+
+  <div class="categories-grid">
+    <a 
+      *ngFor="let type of taxonomy" 
+      [routerLink]="['/products']"
+      [queryParams]="{ typeId: type.id }"
+      class="category-card"
+    >
+      <div class="category-icon">
+        {{ type.name?.[0] || '?' }}
+      </div>
+      <div class="category-info">
+        <h3>{{ type.name }}</h3>
+        <span>{{ type.categories?.length || 0 }} categories</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<section class="products-section container">
+  <div class="section-header">
+    <h2 class="section-title">Latest Products</h2>
+    <a routerLink="/products" class="view-all">View all &rarr;</a>
+  </div>
+
+  <div class="loading-grid" *ngIf="isLoading">
+    <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5,6,7,8]"></div>
+  </div>
+
+  <div class="products-grid" *ngIf="!isLoading">
+    <div class="product-item" *ngFor="let product of featuredProducts">
+      <small class="taxonomy-path">{{ product | productTaxonomy }}</small>
+      
+      <app-product-card [product]="product"></app-product-card>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="!isLoading && featuredProducts.length === 0">
+    <p>No products available yet.</p>
+    <a routerLink="/admin/products" class="btn btn-primary">Add Products</a>
+  </div>
+</section>
+
+<section class="value-props">
+  <div class="container">
+    <div class="props-grid">
+      <div class="prop-item">
+        <div class="prop-icon">🚚</div>
+        <h3>Fast Delivery</h3>
+        <p>Quick shipping to your doorstep</p>
+      </div>
+      <div class="prop-item">
+        <div class="prop-icon">🔒</div>
+        <h3>Secure Payments</h3>
+        <p>Multiple safe payment options</p>
+      </div>
+      <div class="prop-item">
+        <div class="prop-icon">⭐</div>
+        <h3>Quality Products</h3>
+        <p>Curated selection of top items</p>
+      </div>
+      <div class="prop-item">
+        <div class="prop-icon">📞</div>
+        <h3>24/7 Support</h3>
+        <p>Always here when you need us</p>
+      </div>
+    </div>
+  </div>
+</section>

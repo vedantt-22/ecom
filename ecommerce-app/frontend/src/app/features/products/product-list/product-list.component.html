@@ -1,0 +1,144 @@
+<div class="product-list-page">
+  <header class="page-header">
+    <div class="container">
+      <h1 class="page-title">
+        {{ searchQuery ? 'Results for "' + searchQuery + '"' : 'All Products' }}
+      </h1>
+      <p class="result-count" *ngIf="!isLoading">
+        <strong>{{ total }}</strong> product{{ total !== 1 ? 's' : '' }} found
+      </p>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="layout">
+      <aside class="filters-sidebar">
+        <div class="filter-header">
+          <h2>Filters</h2>
+          <button 
+            *ngIf="hasActiveFilters" 
+            class="clear-link-btn" 
+            (click)="clearFilters()"
+            aria-label="Clear all filters"
+          >
+            Reset All
+          </button>
+        </div>
+
+        <section class="filter-group">
+          <label for="sidebar-search">Search</label>
+          <div class="search-input-wrapper">
+            <input
+              id="sidebar-search"
+              type="text"
+              [(ngModel)]="searchQuery"
+              (keyup.enter)="onSearch()"
+              placeholder="Keyword..."
+            />
+            <button class="icon-btn" (click)="onSearch()" title="Search">Go</button>
+          </div>
+        </section>
+
+        <section class="filter-group">
+          <label>Category Hierarchy</label>
+          
+          <select [(ngModel)]="selectedTypeId" (change)="onFilterChange()">
+            <option [ngValue]="undefined">Select Type</option>
+            <option *ngFor="let type of taxonomyTree; trackBy: trackById" [ngValue]="type.id">
+              {{ type.name }}
+            </option>
+          </select>
+
+          <select 
+            *ngIf="filteredCategories.length" 
+            [(ngModel)]="selectedCategoryId" 
+            (change)="onFilterChange()"
+            class="sub-select"
+          >
+            <option [ngValue]="undefined">Select Category</option>
+            <option *ngFor="let cat of filteredCategories; trackBy: trackById" [ngValue]="cat.id">
+              {{ cat.name }}
+            </option>
+          </select>
+
+          <select 
+            *ngIf="filteredSubCategories.length" 
+            [(ngModel)]="selectedSubCategoryId" 
+            (change)="onFilterChange()"
+            class="sub-select"
+          >
+            <option [ngValue]="undefined">Select Sub-Category</option>
+            <option *ngFor="let sub of filteredSubCategories; trackBy: trackById" [ngValue]="sub.id">
+              {{ sub.name }}
+            </option>
+          </select>
+        </section>
+
+        <section class="filter-group">
+          <label>Price Range (₹)</label>
+          <div class="range-grid">
+            <input type="number" [(ngModel)]="minPrice" (blur)="onFilterChange()" placeholder="Min" />
+            <input type="number" [(ngModel)]="maxPrice" (blur)="onFilterChange()" placeholder="Max" />
+          </div>
+        </section>
+
+        <section class="filter-group">
+          <label>Sort By</label>
+          <div class="sort-controls">
+            <select [(ngModel)]="sortBy" (change)="onFilterChange()">
+              <option value="createdAt">Date Added</option>
+              <option value="price">Price</option>
+              <option value="name">Alphabetical</option>
+            </select>
+            <select [(ngModel)]="sortOrder" (change)="onFilterChange()">
+              <option value="DESC">Descending</option>
+              <option value="ASC">Ascending</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="filter-group checkbox-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="inStockOnly" (change)="onFilterChange()" />
+            <span>In stock only</span>
+          </label>
+        </section>
+      </aside>
+
+      <main class="products-main" aria-live="polite">
+        
+        <div class="products-grid" *ngIf="isLoading">
+          <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5,6]"></div>
+        </div>
+
+        <div class="alert-box error" *ngIf="errorMsg">
+          <p>{{ errorMsg }}</p>
+        </div>
+
+        <ng-container *ngIf="!isLoading && products.length > 0">
+          <div class="products-grid">
+            <div class="product-container" *ngFor="let product of products; trackBy: trackById">
+              <span class="taxonomy-label">{{ product | productTaxonomy }}</span>
+              <app-product-card [product]="product"></app-product-card>
+            </div>
+          </div>
+
+          <app-pagination
+            [currentPage]="currentPage"
+            [totalPages]="totalPages"
+            [total]="total"
+            [pageSize]="pageSize"
+            (pageChange)="onPageChange($event)"
+          ></app-pagination>
+        </ng-container>
+
+        <div class="empty-results" *ngIf="!isLoading && products.length === 0">
+          <div class="empty-icon">🔍</div>
+          <p>We couldn't find any matches for your current filters.</p>
+          <button class="btn-primary" (click)="clearFilters()">Reset All Filters</button>
+        </div>
+
+      </main>
+    </div>
+  </div>
+</div>

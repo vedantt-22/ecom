@@ -2,105 +2,120 @@ import { AppDataSource } from "../data-source";
 import { Category } from "../entities/Category";
 import { Product } from "../entities/Product";
 import { validateInput } from "../utils/validation";
+import path from "path";
 
 const productRepo = () => AppDataSource.getRepository(Product);
 
 export interface SearchParams {
-    q?: string;
-    typeId: number;
-    categoryId?: number;
-    subCategoryId?: number;
-    minPrice?: number;
-    maxPrice?: number;
-    inStock?: boolean;
-    sortBy?: string;
-    sortOrder?: "ASC" | "DESC";
-    page?: number;
-    pageSize?: number;
-
+  q?: string;
+    typeId?: number;
+  categoryId?: number;
+  subCategoryId?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  inStock?: boolean;
+  sortBy?: string;
+  sortOrder?: "ASC" | "DESC";
+  page?: number;
+  pageSize?: number;
 }
 
 export interface SearchResult {
-    data: any[];
-    total: number;
-    page: number;
-    pageSize: number;
-    totalPages: number;
+  data: any[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 }
 
 export class SearchService {
+  async searchProducts(params: SearchParams) {
+    // 1. Strict Pagination Parsing
+    const page = Math.max(1, parseInt(String(params.page)) || 1);
+    const pageSize = Math.max(1, Math.min(parseInt(String(params.pageSize)) || 12, 50));
 
-    async searchProducts(params: SearchParams) {
-        const page = params.page ?? 1;
-        const pageSize = Math.min(params.pageSize ?? 12, 50);
+    // 2. Sorting Setup
+    const allowedSortFields = ["name", "price", "createdAt", "stock"];
+    const sortBy = allowedSortFields.includes(params.sortBy || "") ? params.sortBy! : "createdAt";
+    const sortOrder = params.sortOrder === "ASC" ? "ASC" : "DESC";
 
-        const allowedSortFields = ["name", "price", "createdAt", "stock"];
-        const sortBy = allowedSortFields.includes(params.sortBy ?? "") ? params.sortBy! : "createdAt";
+    // 3. Initialize Query Builder WITHOUT a .where()
+    const qb = productRepo()
+        .createQueryBuilder("product")
+        .leftJoinAndSelect("product.subCategory", "subCategory")
+        .leftJoinAndSelect("subCategory.category", "category")
+        .leftJoinAndSelect("category.type", "type");
 
-        const sortOrder = params.sortOrder === "ASC" ? "ASC" : "DESC";
-
-        const qb = productRepo()
-            .createQueryBuilder("product")
-            .leftJoinAndSelect("product.subCategory", "subCategory")
-            .leftJoinAndSelect("subCategory.category", "category")
-            .leftJoinAndSelect("category.type", "type")
-            .where("type.id = :typeId", { typeId: params.typeId });
-
-            if(params.q) {
-                const cleanQuery = validateInput(params.q).toLowerCase();
-                qb.andWhere("LOWER(product.name) LIKE :search OR LOWER(product.description) LIKE :search", { search: `%${cleanQuery}%` });
+        // 4. Optional Type ID Filter
+        if (params.typeId !== undefined) {
+            const tId = parseInt(String(params.typeId));
+            if (!isNaN(tId)) {
+                qb.andWhere("type.id = :tId", { tId });
             }
+    }
 
-            if(params.subCategoryId) {
-                qb.andWhere("subCategory.id = :subCategoryId", { subCategoryId: params.subCategoryId });
-            }
+    // 5. Conditional Filters (Using unique parameter names to avoid collisions)
+    if (params.q) {
+        const cleanQuery = validateInput(params.q).toLowerCase();
+        qb.andWhere("(LOWER(product.name) LIKE :q OR LOWER(product.description) LIKE :q)", { 
+            q: `%${cleanQuery}%` 
+        });
+    }
 
-            if(params.categoryId) {
-                qb.andWhere("category.id = :categoryId", { categoryId: params.categoryId});
-            }
+    if (params.categoryId) {
+        const cId = parseInt(String(params.categoryId));
+        if (!isNaN(cId)) qb.andWhere("category.id = :cId", { cId });
+    }
 
-            if(params.typeId) {
-                qb.andWhere("type.id = :typeId", { typeId: params.typeId });
-            }
+    if (params.subCategoryId) {
+        const sId = parseInt(String(params.subCategoryId));
+        if (!isNaN(sId)) qb.andWhere("subCategory.id = :sId", { sId });
+    }
 
-            if(params.minPrice !== undefined && !isNaN(params.minPrice)) {
-                qb.andWhere("product.price >= :minPrice", { minPrice: params.minPrice });
-            }
+    if (params.minPrice !== undefined) {
+        const minP = parseFloat(String(params.minPrice));
+        if (!isNaN(minP)) qb.andWhere("product.price >= :minP", { minP });
+    }
 
-            if(params.maxPrice !== undefined && !isNaN(params.maxPrice)) {
-                qb.andWhere("product.price <= :maxPrice", { maxPrice: params.maxPrice });
-            }
-            if(params.inStock === true) {
-                qb.andWhere("product.stock > 0");
-            }
+    if (params.maxPrice !== undefined) {
+        const maxP = parseFloat(String(params.maxPrice));
+        if (!isNaN(maxP)) qb.andWhere("product.price <= :maxP", { maxP });
+    }
 
-            qb.orderBy(`product.${sortBy}`, sortOrder)
-              .skip((page - 1) * pageSize)
-              .take(pageSize);
+    if (params.inStock === true) {
+        qb.andWhere("product.stock > 0");
+    }
 
+    // 6. Pagination & Ordering
+    // We use getManyAndCount but ensure skip/take receive clean integers
+    qb.orderBy(`product.${sortBy}`, sortOrder)
+      .skip((page - 1) * pageSize)
+      .take(pageSize);
 
-            const [products, total] = await qb.getManyAndCount();
+    // 7. Execute with Error Catching
+    try {
+        const [products, total] = await qb.getManyAndCount();
+        
+        const data = products.map((p) => ({
+            ...p,
+            imageUrl: p.imagePath ? `/images/${path.basename(p.imagePath)}` : "/images/placeholder.png",
+        }));
 
-            const data = products.map((p) => ({
-                ...p,
-                imageUrl: p.imagePath ?
-                `/ProductImages/${p.imagePath}` : "/ProductImages/placeholder.png",
-            }));
-
-            const totalPages = Math.ceil(total / pageSize);
-
-            return {
-                success: true,
-                statusCode: 200,
-                result: {
-                    data,
-                    total,
-                    page,
-                    pageSize,
-                    totalPages,
-                } as SearchResult,
-            };
-        }
+        return {
+            success: true,
+            statusCode: 200,
+            result: {
+                data,
+                total,
+                page,
+                pageSize,
+                totalPages: Math.ceil(total / pageSize),
+            },
+        };
+    } catch (err) {
+        console.error("Database Error:", err);
+        throw err; // This will be caught by your asyncHandler
+    }
 }
-
+}
 export const searchService = new SearchService();

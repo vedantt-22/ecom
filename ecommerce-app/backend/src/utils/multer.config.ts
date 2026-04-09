@@ -6,7 +6,7 @@ import { Request } from "express";
 const storage = multer.diskStorage({
     // Define the destination folder for uploaded files
     destination: (req, file, callback) => {
-        callback(null, path.join(__dirname, "../../../Productimages/"));
+        callback(null, path.join(__dirname, "../../../ProductImages/"));
     },
     // Define the filename format for uploaded files
     filename: (req, file, callback) => {

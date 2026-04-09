@@ -25,7 +25,7 @@ function formatOrder(order: Order) {
             product: {
                 id: item.product?.id,
                 name: item.product?.name,
-                imageUrl: item.product?.imagePath ? `ProductImages/${item.product.imagePath}` : "ProductImages/placeholder.png",
+                imageUrl: item.product?.imagePath ? `/images/${item.product.imagePath}` : "/images/placeholder.png",
             }
         })),
     };
