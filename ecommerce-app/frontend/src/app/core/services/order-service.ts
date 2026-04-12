@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { 
   Ordermodel, 
@@ -23,9 +23,10 @@ export class OrderService {
     return this.http.get<Ordermodel[]>(`${this.apiUrl}/orders/my`);
   } 
 
-  getOrderById(id: Ordermodel['id']): Observable<Ordermodel> {
-    return this.http.get<Ordermodel>(`${this.apiUrl}/orders/${id}`);
-  }
+  getOrderById(id: number): Observable<Ordermodel> {
+  return this.http.get<{ data: Ordermodel }>(`${this.apiUrl}/orders/${id}`)
+    .pipe(map(res => res.data));
+}
 
   getAllOrders(): Observable<Ordermodel[]> {
     return this.http.get<Ordermodel[]>(`${this.apiUrl}/orders/admin/all`);

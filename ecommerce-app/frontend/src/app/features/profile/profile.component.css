@@ -1,0 +1,148 @@
+/* profile.component.css */
+.profile-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+  padding: 1.5rem 0 3rem;
+}
+
+/* ── Left column ──────────────────────────────────────────── */
+.profile-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #1a1a2e;
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.profile-card h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 0.3rem;
+}
+
+.profile-email {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 0.8rem;
+}
+
+.profile-role {
+  display: inline-block;
+  background: #e94560;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+
+/* Sessions card */
+.sessions-card { }
+.sessions-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 0.4rem;
+}
+.sessions-note {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.session-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  gap: 0.5rem;
+}
+
+.session-agent {
+  font-size: 0.78rem;
+  color: #333;
+  margin-bottom: 0.2rem;
+}
+
+.session-meta {
+  font-size: 0.72rem;
+  color: #aaa;
+}
+
+.current-badge {
+  background: #d4edda;
+  color: #155724;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.terminate-btn {
+  background: #fee;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.terminate-btn:hover { background: #dc3545; color: white; }
+
+/* ── Right column ─────────────────────────────────────────── */
+.profile-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 1.5rem;
+}
+
+.card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #eee;
+}
+
+.input-error { border-color: #dc3545 !important; }
+
+@media (max-width: 768px) {
+  .profile-layout { grid-template-columns: 1fr; }
+}

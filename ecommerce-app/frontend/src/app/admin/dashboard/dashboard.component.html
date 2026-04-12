@@ -1,1 +1,51 @@
-<p>dashboard works!</p>
+<!-- dashboard.component.html -->
+<div class="admin-page">
+  <h1 class="admin-title">Dashboard</h1>
+
+  <div class="loading-wrapper" *ngIf="isLoading">
+    <div class="spinner"></div>
+  </div>
+
+  <div *ngIf="stats && !isLoading">
+
+    <!-- Stats grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <p class="stat-label">Total Customers</p>
+        <p class="stat-value">{{ stats.totalCustomers }}</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Total Orders</p>
+        <p class="stat-value">{{ stats.totalOrders }}</p>
+      </div>
+      <div class="stat-card warn">
+        <p class="stat-label">Locked Accounts</p>
+        <p class="stat-value">{{ stats.lockedCustomers }}</p>
+      </div>
+      <div class="stat-card info">
+        <p class="stat-label">Active Sessions</p>
+        <p class="stat-value">{{ stats.activeSessions }}</p>
+      </div>
+    </div>
+
+    <!-- Quick nav -->
+    <div class="quick-nav">
+      <h2>Quick Access</h2>
+      <div class="quick-nav-grid">
+        <a routerLink="/admin/products"  class="quick-card">
+          <span class="quick-icon">📦</span>
+          <span>Manage Products</span>
+        </a>
+        <a routerLink="/admin/customers" class="quick-card">
+          <span class="quick-icon">👥</span>
+          <span>Manage Customers</span>
+        </a>
+        <a routerLink="/admin/orders"    class="quick-card">
+          <span class="quick-icon">🛒</span>
+          <span>View Orders</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>

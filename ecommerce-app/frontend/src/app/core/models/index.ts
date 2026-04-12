@@ -10,3 +10,4 @@ export * from './order.model';
 export * from './address.model';
 export * from './review.model';
 export * from './search.model';
+export * from './payment.model';

@@ -1,1 +1,84 @@
-<p>order-detail works!</p>
+<div class="container">
+
+  <div class="loading-wrapper" *ngIf="isLoading">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="alert alert-error" *ngIf="errorMsg && !isLoading">
+    {{ errorMsg }}
+    <a routerLink="/orders">Back to Orders</a>
+  </div>
+
+  <div *ngIf="order && !isLoading">
+    <div class="confirmation-banner" *ngIf="isConfirmation">
+      <div class="confirmation-icon">✓</div>
+      <div>
+        <h2>Order Placed Successfully!</h2>
+        <p>Thank you for your purchase. Your order is being processed.</p>
+      </div>
+    </div>
+
+    <div class="order-header">
+      <div>
+        <h1 class="page-title">Order #{{ order.id }}</h1>
+        <p class="order-date">Placed on {{ order.createdAt | date:'mediumDate' }}</p>
+      </div>
+      <div class="order-status" [style.color]="getStatusColor(order.status)">
+        {{ order.status | titlecase }}
+      </div>
+    </div>
+
+    <div class="order-layout">
+      <div class="order-main">
+        <div class="order-items-card">
+          <h2>Items Ordered</h2>
+          <div class="order-item" *ngFor="let item of order.items">
+            <div class="item-image">
+              <img [src]="item.product?.imageUrl || '/images/placeholder.png'" [alt]="item.product?.name">
+            </div>
+            <div class="item-info">
+              <h3>{{ item.product?.name || 'Product no longer available' }}</h3>
+              <p>Quantity: {{ item.quantity }}</p>
+              <p class="price-at-purchase">₹{{ item.priceAtPurchase | number:'1.2-2' }} each</p>
+            </div>
+            <div class="item-line-total">
+              ₹{{ (item.priceAtPurchase * item.quantity) | number:'1.2-2' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-sidebar">
+        
+        <div class="card shipping-card" *ngIf="order.shippingAddress">
+          <h2>Shipping Address</h2>
+          <div class="address-details">
+            <p><strong>{{ order.shippingAddress.fullName }}</strong></p>
+            <p>{{ order.shippingAddress.addressLine1 }}</p>
+            <p *ngIf="order.shippingAddress.addressLine2">{{ order.shippingAddress.addressLine2 }}</p>
+            <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.state }} - {{ order.shippingAddress.pincode }}</p>
+            <p>Phone: {{ order.shippingAddress.phone }}</p>
+          </div>
+        </div>
+
+        <div class="card summary-card">
+          <h2>Order Summary</h2>
+          <div class="detail-row">
+            <span>Payment Method</span>
+            <span>{{ formatPaymentMethod(order.paymentMethod) }}</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="detail-row total-row">
+            <span>Total Amount</span>
+            <span>₹{{ order.totalAmount | number:'1.2-2' }}</span>
+          </div>
+          <div class="order-actions">
+            <a routerLink="/orders" class="btn btn-outline btn-block">Back to My Orders</a>
+            <a routerLink="/products" class="btn btn-primary btn-block">Continue Shopping</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

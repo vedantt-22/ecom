@@ -1,0 +1,135 @@
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.order-row {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.order-summary-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 120px 120px 110px 130px 30px;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.order-summary-row:hover {
+  background: #fafafa;
+}
+.order-summary-row.expanded {
+  background: #f8f9fa;
+}
+
+.order-id {
+  font-weight: 700;
+  color: #1a1a2e;
+  font-size: 0.9rem;
+}
+
+.order-customer {
+  display: flex;
+  flex-direction: column;
+}
+
+.customer-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1a1a2e;
+}
+.customer-email {
+  font-size: 0.78rem;
+  color: #888;
+}
+
+.order-date {
+  font-size: 0.85rem;
+  color: #888;
+}
+.order-amount {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.status-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.status-select {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.expand-icon {
+  font-size: 0.7rem;
+  color: #aaa;
+  text-align: center;
+}
+
+/* ── Expanded detail ──────────────────────────────────────── */
+.order-detail-row {
+  padding: 1.2rem;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.detail-loading {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.detail-meta {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.detail-table th {
+  text-align: left;
+  padding: 0.5rem 0.8rem;
+  background: #f0f0f0;
+  color: #555;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.detail-table td {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.loading-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #888;
+}

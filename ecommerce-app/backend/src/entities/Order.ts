@@ -1,15 +1,22 @@
 import {
-  Entity, PrimaryGeneratedColumn, Column,
-  ManyToOne, OneToMany, JoinColumn, CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
   Index
 } from "typeorm";
 import { User } from "./User";
 import { OrderItem } from "./OrderItem";
+import { Address } from "./Address";
 
 export type PaymentMethod =
   | "credit_card"
   | "debit_card"
-  | "pay_on_delivery"
+  | "cash_on_delivery"
   | "bank_transfer";
 
 export type OrderStatus =
@@ -26,16 +33,13 @@ export class Order {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  // Changed to 'simple-float' or 'float' for better SQLite compatibility
   @Column({ type: "float" }) 
   totalAmount!: number;
 
-  // Changed from 'enum' to 'varchar' (or 'simple-enum')
-  // We use the TypeScript type for intellisense, but DB stores it as a string
   @Column({
     type: "varchar",
     length: 50,
-    default: "cash_on_delivery"
+    default: "cash_on_delivery" 
   })
   paymentMethod!: PaymentMethod;
 
@@ -49,6 +53,12 @@ export class Order {
   @CreateDateColumn()
   createdAt!: Date;
 
+  @UpdateDateColumn()
+  updatedAt!: Date;
+
+  @Column()
+  @Index()
+  userId!: number; 
 
   @ManyToOne(() => User, (user) => user.orders, {
     nullable: false,
@@ -57,6 +67,18 @@ export class Order {
   @JoinColumn({ name: "userId" })
   user!: User;
 
-  @OneToMany(() => OrderItem, (item) => item.order, { cascade: true })
+  @Column({ nullable: true })
+  shippingAddressId!: number | null;
+
+  @ManyToOne(() => Address, {
+    nullable: true,
+    onDelete: "SET NULL",
+  })
+  @JoinColumn({ name: "shippingAddressId" })
+  shippingAddress!: Address | null;
+
+  @OneToMany(() => OrderItem, (item) => item.order, { 
+    cascade: ["insert", "update"] 
+  })
   items!: OrderItem[];
 }

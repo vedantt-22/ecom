@@ -1,33 +1,7 @@
-<nav class="navbar">
-  <div class="nav-name">
-    <a routerLink="/">E-Commerce App</a>
-  </div>
+<!-- src/app/app.component.html -->
 
-    <div class="nav-items">
-      <a routerLink="/" routerLinkActive="active">Home</a>
-      <a routerLink="/products" routerLinkActive="active">Products</a>
+<app-navbar></app-navbar>
 
-      <ng-container *ngIf="!(authService.currentUser$ | async)">
-        <a routerLink="/login" routerLinkActive="active">Login</a>
-        <a routerLink="/register" routerLinkActive="active">Register</a>
-      </ng-container>
-
-
-      <ng-container *ngIf="(authService.currentUser$ | async)?.role === 'customer'">
-        <a routerLink="/cart" routerLinkActive="active">Cart
-        <span class="cart-count" *ngIf="cartService.itemCount > 0">{{ cartService.itemCount }}</span></a>
-        <a routerLink="/orders" routerLinkActive="active">Orders</a>
-        <a routerLink="/profile" routerLinkActive="active">Profile</a>
-        <button (click)="logout()" class="btn-logout">Logout</button>
-      </ng-container>
-
-      <ng-container *ngIf="(authService.currentUser$ | async)?.role === 'admin'">
-        <a routerLink="/admin" routerLinkActive="active">Admin Panel</a>
-        <button (click)="logout()" class="btn-logout">Logout</button>
-      </ng-container>
-
-    </div>
-</nav>
-<div class="main">
-  <router-outlet/>
-</div>
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>

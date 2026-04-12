@@ -2,21 +2,29 @@ import { AppDataSource } from "../data-source";
 import { Cart } from "../entities/Cart";
 import { Product } from "../entities/Product";
 import { CartItem } from "../entities/CartItem";
-import { Order } from "../entities/Order";
+import { Order, PaymentMethod } from "../entities/Order"; 
 import { OrderItem } from "../entities/OrderItem";
-
-const VALID_PAYMENT_METHODS = ["credit_card", "debit_card", "pay_on_delivery", "bank_transfer"] as const;
-type PaymentMethods = typeof VALID_PAYMENT_METHODS[number];
+import { paymentService } from "./payment.service";
+import { Address } from "../entities/Address";
 
 const cartRepo = () => AppDataSource.getRepository(Cart);
 const orderRepo = () => AppDataSource.getRepository(Order);
+const addressRepo = () => AppDataSource.getRepository(Address);
 
+// Standardized formatter to include address details
 function formatOrder(order: Order) {
     return {
         id: order.id,
         totalAmount: Number(order.totalAmount),
         paymentMethod: order.paymentMethod,
+        status: order.status,
         createdAt: order.createdAt,
+        shippingAddress: order.shippingAddress ? {
+            label: order.shippingAddress.label,
+            fullName: order.shippingAddress.fullName,
+            city: order.shippingAddress.city,
+            addressLine1: order.shippingAddress.addressLine1
+        } : null,
         items: (order.items || []).map(item => ({
             id: item.id,
             quantity: item.quantity,
@@ -33,39 +41,36 @@ function formatOrder(order: Order) {
 
 export class OrderService {
 
-    async checkout(userId: number, paymentMethod: PaymentMethods) {
-        // Fix 1: Properly check includes (cast to string to avoid TS errors)
-        if (!VALID_PAYMENT_METHODS.includes(paymentMethod as any)) {
-            return { success: false, statusCode: 400, message: "Invalid payment method" };
+    async checkout(userId: number, paymentMethod: string, shippingAddressId: number) {
+        // 1. Validate Address ownership
+        const address = await addressRepo().findOne({
+            where: { id: shippingAddressId, userId }
+        });
+
+        if (!address) {
+            return { success: false, statusCode: 400, message: "Please select a valid shipping address." };
         }
 
+        // 2. Load Cart with items and products
         const cart = await cartRepo().findOne({
             where: { user: { id: userId } },
             relations: ["items", "items.product"],
         });
 
-        if (!cart) {
-            return { success: false, statusCode: 404, message: "Cart not found" };
-        }
-
-        if (cart.items.length === 0) {
+        if (!cart || cart.items.length === 0) {
             return { success: false, statusCode: 400, message: "Your cart is empty." };
         }
 
-        // Fix 2: Validation Loop - item.product check was accessing .id on null
+        // 3. Stock Validation
         for (const item of cart.items) {
             if (!item.product) {
-                return {
-                    success: false,
-                    statusCode: 400,
-                    message: "One or more products in your cart no longer exist.",
-                };
+                return { success: false, statusCode: 400, message: "One or more products no longer exist." };
             }
             if (item.quantity > item.product.stock) {
-                return {
-                    success: false,
-                    statusCode: 409,
-                    message: `Not enough stock for "${item.product.name}". Available: ${item.product.stock}`,
+                return { 
+                    success: false, 
+                    statusCode: 409, 
+                    message: `Not enough stock for "${item.product.name}".` 
                 };
             }
         }
@@ -74,19 +79,23 @@ export class OrderService {
             return sum + (Number(item.product.price) * item.quantity);
         }, 0);
 
+        // 4. Database Transaction
         const queryRunner = AppDataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
 
         try {
+            // Create the Order
             const order = queryRunner.manager.create(Order, {
-                user: { id: userId },
+                userId, // Using the explicit userId column we added earlier
                 totalAmount,
-                paymentMethod,
+                paymentMethod: paymentMethod as PaymentMethod,
+                shippingAddress: address, // Link to the Address entity
             });
 
-            const savedOrder = await queryRunner.manager.save(order);
+            const savedOrder = await queryRunner.manager.save(Order, order);
 
+            // Create OrderItems and Update Stock
             for (const item of cart.items) {
                 const orderItem = queryRunner.manager.create(OrderItem, {
                     order: savedOrder,
@@ -96,7 +105,7 @@ export class OrderService {
                 });
                 await queryRunner.manager.save(OrderItem, orderItem);
 
-                // Fix 3: Atomic stock update (Prevent negative stock)
+                // Atomic stock decrement
                 await queryRunner.manager.createQueryBuilder()
                     .update(Product)
                     .set({ stock: () => `stock - ${item.quantity}` })
@@ -104,13 +113,22 @@ export class OrderService {
                     .execute();
             }
 
+            // Clear Cart
             await queryRunner.manager.delete(CartItem, { cart: { id: cart.id } });
 
             await queryRunner.commitTransaction();
 
+            // 5. Create Payment Record (After successful order commitment)
+            await paymentService.createPaymentRecord(
+                savedOrder.id,
+                totalAmount,
+                paymentMethod
+            );
+
+            // Fetch final order with all relations for the response
             const completeOrder = await orderRepo().findOne({
                 where: { id: savedOrder.id },
-                relations: ["items", "items.product"],
+                relations: ["items", "items.product", "shippingAddress"],
             });
 
             return {
@@ -122,64 +140,10 @@ export class OrderService {
         } catch (error) {
             await queryRunner.rollbackTransaction();
             console.error("Checkout failed:", error);
-            return { success: false, statusCode: 500, message: "An error occurred during checkout." };
+            return { success: false, statusCode: 500, message: "Checkout failed. Please try again." };
         } finally {
             await queryRunner.release();
         }
-    }
-
-    async getMyOrders(userId: number) {
-        const orders = await orderRepo().find({
-            where: { user: { id: userId } },
-            relations: ["items", "items.product"],
-            order: { createdAt: "DESC" },
-        });
-        return { success: true, statusCode: 200, data: orders.map(formatOrder) };
-    }
-
-    async getOrderById(userId: number, orderId: number, isAdmin: boolean) {
-        // Fix 4: If admin, don't restrict the 'where' clause by userId
-        const order = await orderRepo().findOne({
-            where: isAdmin ? { id: orderId } : { id: orderId, user: { id: userId } },
-            relations: ["items", "items.product", "user"],
-        });
-
-        if (!order) {
-            return { success: false, statusCode: 404, message: "Order not found" };
-        }
-
-        return {
-            success: true,
-            statusCode: 200,
-            data: {
-                ...formatOrder(order),
-                user: isAdmin ? { id: order.user?.id, name: order.user?.name } : undefined
-            },
-        };
-    }
-
-    getAllOrders = async (isAdmin: boolean) => {
-        if (!isAdmin) {
-            return { success: false, statusCode: 403, message: "Forbidden" };
-        }
-
-        const orders = await orderRepo().find({
-            relations: ["items", "items.product", "user"],
-            order: { createdAt: "DESC" },
-        });
-
-        return {
-            success: true,
-            statusCode: 200,
-            data: orders.map((order) => ({
-                ...formatOrder(order),
-                user: {
-                    id: order.user?.id,
-                    name: order.user?.name,
-                    email: order.user?.email,
-                }
-            })),
-        };
     }
 }
 

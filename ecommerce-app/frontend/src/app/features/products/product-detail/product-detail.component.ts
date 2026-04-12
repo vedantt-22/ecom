@@ -19,7 +19,6 @@ import { ProductTaxonomyPipe } from '../../../core/pipes/product-taxonomy.pipe';
   styleUrl: './product-detail.component.css'
 })
 export class ProductDetailComponent implements OnInit, OnDestroy {
-  // Use Productmodel for full detail view
   product: Productmodel | null = null;
   isLoading = true;
   errorMsg = '';
@@ -27,7 +26,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
 
   // Cart State
   quantity = 1;
-  isAddingToCart = false; // Fixed typo from 'isAdedingToCart'
+  isAddingToCart = false; 
   addedToCart = false;
   cartErrorMsg = '';
 

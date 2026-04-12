@@ -1,1 +1,173 @@
-<p>profile works!</p>
+<!-- profile.component.html -->
+<div class="container">
+  <h1 class="page-title">My Profile</h1>
+
+  <div class="profile-layout">
+
+    <!-- ── Left column ──────────────────────────────────── -->
+    <div class="profile-left">
+
+      <!-- Profile Info Card -->
+      <div class="profile-card">
+        <div class="profile-avatar">
+          {{ authService.currentUser?.name?.[0]?.toUpperCase() }}
+        </div>
+        <h2>{{ authService.currentUser?.name }}</h2>
+        <p class="profile-email">{{ authService.currentUser?.email }}</p>
+        <span class="profile-role">{{ authService.currentUser?.role }}</span>
+      </div>
+
+      <!-- Active Sessions -->
+      <div class="card sessions-card">
+        <h3>Active Sessions</h3>
+        <p class="sessions-note">
+          These are all devices currently logged in to your account.
+        </p>
+
+        <div class="sessions-list" *ngIf="!loadingSessions">
+          <div class="session-item" *ngFor="let session of sessions">
+            <div class="session-info">
+              <p class="session-agent">{{ session.userAgent | slice:0:50 }}</p>
+              <p class="session-meta">
+                {{ session.ip }} ·
+                {{ session.createdAt | date:'short' }}
+              </p>
+            </div>
+            <div class="session-actions">
+              <span class="current-badge" *ngIf="session.isCurrent">Current</span>
+              <button
+                *ngIf="!session.isCurrent"
+                class="terminate-btn"
+                (click)="terminateSession(session.jti)"
+              >
+                End
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Right column ─────────────────────────────────── -->
+    <div class="profile-right">
+
+      <!-- Edit Profile Form -->
+      <div class="card">
+        <h3>Edit Profile</h3>
+
+        <div class="alert alert-success" *ngIf="profileMsg">{{ profileMsg }}</div>
+        <div class="alert alert-error"   *ngIf="profileError">{{ profileError }}</div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+
+          <div class="form-group">
+            <label>Full Name</label>
+            <input
+              type="text"
+              formControlName="name"
+              [class.input-error]="pf['name'].invalid && pf['name'].touched"
+            />
+            <span class="error-message"
+              *ngIf="pf['name'].touched && pf['name'].errors?.['required']">
+              Name is required.
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label>Email Address</label>
+            <input
+              type="email"
+              formControlName="email"
+              [class.input-error]="pf['email'].invalid && pf['email'].touched"
+            />
+            <span class="error-message"
+              *ngIf="pf['email'].touched && pf['email'].errors?.['required']">
+              Email is required.
+            </span>
+            <span class="error-message"
+              *ngIf="pf['email'].touched && pf['email'].errors?.['email']">
+              Please enter a valid email.
+            </span>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="savingProfile"
+          >
+            {{ savingProfile ? 'Saving...' : 'Save Changes' }}
+          </button>
+
+        </form>
+      </div>
+
+      <!-- Change Password Form -->
+      <div class="card">
+        <h3>Change Password</h3>
+
+        <div class="alert alert-success" *ngIf="passwordMsg">{{ passwordMsg }}</div>
+        <div class="alert alert-error"   *ngIf="passwordError">{{ passwordError }}</div>
+
+        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+
+          <div class="form-group">
+            <label>Current Password</label>
+            <input
+              type="password"
+              formControlName="currentPassword"
+              [class.input-error]="pwf['currentPassword'].invalid && pwf['currentPassword'].touched"
+            />
+            <span class="error-message"
+              *ngIf="pwf['currentPassword'].touched && pwf['currentPassword'].errors?.['required']">
+              Current password is required.
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label>New Password</label>
+            <input
+              type="password"
+              formControlName="newPassword"
+              [class.input-error]="pwf['newPassword'].invalid && pwf['newPassword'].touched"
+            />
+            <span class="error-message"
+              *ngIf="pwf['newPassword'].touched && pwf['newPassword'].errors?.['minlength']">
+              Must be at least 8 characters.
+            </span>
+            <span class="error-message"
+              *ngIf="pwf['newPassword'].touched && pwf['newPassword'].errors?.['passwordStrength']">
+              Must contain uppercase, lowercase, and a number.
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input
+              type="password"
+              formControlName="confirmPassword"
+              [class.input-error]="
+                pwf['confirmPassword'].touched &&
+                (pwf['confirmPassword'].errors?.['required'] ||
+                passwordForm.errors?.['passwordMismatch'])
+              "
+            />
+            <span class="error-message"
+              *ngIf="pwf['confirmPassword'].touched && passwordForm.errors?.['passwordMismatch']">
+              Passwords do not match.
+            </span>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="savingPassword"
+          >
+            {{ savingPassword ? 'Changing...' : 'Change Password' }}
+          </button>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

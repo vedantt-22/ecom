@@ -1,1 +1,101 @@
-<p>orders works!</p>
+<!-- admin-orders.component.html -->
+<div class="admin-page">
+  <h1 class="admin-title">Orders</h1>
+
+  <div class="alert alert-success" *ngIf="successMsg">{{ successMsg }}</div>
+  <div class="alert alert-error"   *ngIf="errorMsg">{{ errorMsg }}</div>
+
+  <div class="loading-wrapper" *ngIf="isLoading">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="orders-list" *ngIf="!isLoading">
+
+    <div class="order-row" *ngFor="let order of orders">
+
+      <!-- Summary row -->
+      <div
+        class="order-summary-row"
+        (click)="toggleOrder(order.id)"
+        [class.expanded]="expandedOrderId === order.id"
+      >
+        <span class="order-id">#{{ order.id }}</span>
+
+        <div class="order-customer">
+          <span class="customer-name">{{ order.customer.name }}</span>
+          <span class="customer-email">{{ order.customer.email }}</span>
+        </div>
+
+        <span class="order-date">{{ order.createdAt | date:'mediumDate' }}</span>
+
+        <span class="order-amount">₹{{ order.totalAmount | number:'1.2-2' }}</span>
+
+        <span
+          class="status-pill"
+          [style.background]="getStatusColor(order.status) + '20'"
+          [style.color]="getStatusColor(order.status)"
+        >
+          {{ order.status | titlecase }}
+        </span>
+
+        <!-- Status update selector -->
+        <select
+          class="status-select"
+          [value]="order.status"
+          (change)="updateStatus(order.id, $any($event.target).value)"
+          (click)="$event.stopPropagation()"
+          [disabled]="updatingStatusId === order.id"
+        >
+          <option *ngFor="let s of statuses" [value]="s">
+            {{ s | titlecase }}
+          </option>
+        </select>
+
+        <span class="expand-icon">
+          {{ expandedOrderId === order.id ? '▲' : '▼' }}
+        </span>
+      </div>
+
+      <!-- Expanded detail -->
+      <div class="order-detail-row" *ngIf="expandedOrderId === order.id">
+
+        <div class="detail-loading" *ngIf="loadingDetail">
+          <div class="spinner"></div>
+        </div>
+
+        <div *ngIf="expandedOrder && !loadingDetail">
+
+          <div class="detail-meta">
+            <span>Payment: {{ formatPaymentMethod(expandedOrder.paymentMethod) }}</span>
+            <span>Items: {{ expandedOrder.items.length }}</span>
+            <span>Total: ₹{{ expandedOrder.totalAmount | number:'1.2-2' }}</span>
+          </div>
+
+          <table class="detail-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Price at Purchase</th>
+                <th>Line Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of expandedOrder.items">
+                <td>{{ item.product?.name ?? 'Deleted product' }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.priceAtPurchase | number:'1.2-2' }}</td>
+                <td>₹{{ item.lineTotal | number:'1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="empty-state" *ngIf="orders.length === 0">
+      <p>No orders have been placed yet.</p>
+    </div>
+  </div>
+</div>

@@ -1,11 +1,5 @@
 import { Addressmodel } from "./address.model";
-
-export type PaymentMethod =
-  | 'credit_card'
-  | 'debit_card'
-  | 'cash_on_delivery'
-  | 'bank_transfer'
-  | 'upi';                    // new
+import { PaymentMethodmodel } from "./payment.model";
 
 export type OrderStatus =
   | 'pending'
@@ -29,27 +23,30 @@ export interface OrderItemmodel {
 export interface Ordermodel {
   id:              number;
   totalAmount:     number;
-  paymentMethod:   PaymentMethod;
+  paymentMethod:   PaymentMethodmodel;
   status:          OrderStatus;
-  createdAt:       string;
+  createdAt:       string | Date;
   items:           OrderItemmodel[];
-  shippingAddress?: Addressmodel;         // new
+  shippingAddress?: Addressmodel;         
 }
 
 export interface CheckoutRequestmodel {
-  paymentMethod:     PaymentMethod;
-  shippingAddressId: number;         // new — required for checkout
+  paymentMethod:     PaymentMethodmodel;
+  shippingAddressId: number;         
 }
 
 export interface CheckoutResponsemodel {
+  success: boolean;
   message: string;
-  order:   Ordermodel;
+  statusCode: number;
+  data:   Ordermodel;
 }
 
 export interface AdminOrder extends Ordermodel {
-  customer: {
+  user: {
     id:    number;
     name:  string;
     email: string;
   };
 }
+

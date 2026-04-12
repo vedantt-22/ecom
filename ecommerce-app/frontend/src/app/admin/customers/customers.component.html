@@ -1,1 +1,69 @@
-<p>customers works!</p>
+<!-- admin-customers.component.html -->
+<div class="admin-page">
+  <h1 class="admin-title">Customers</h1>
+
+  <div class="alert alert-success" *ngIf="successMsg">{{ successMsg }}</div>
+  <div class="alert alert-error"   *ngIf="errorMsg">{{ errorMsg }}</div>
+
+  <div class="loading-wrapper" *ngIf="isLoading">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="table-card" *ngIf="!isLoading">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Joined</th>
+          <th>Sessions</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let customer of customers">
+          <td class="customer-name">
+            <div class="customer-avatar">
+              {{ customer.name[0].toUpperCase() }}
+            </div>
+            {{ customer.name }}
+          </td>
+          <td>{{ customer.email }}</td>
+          <td>{{ customer.createdAt | date:'mediumDate' }}</td>
+          <td>
+            <span class="sessions-count">
+              {{ customer.activeSessions }}
+              {{ customer.activeSessions === 1 ? 'session' : 'sessions' }}
+            </span>
+          </td>
+          <td>
+            <span
+              class="status-badge"
+              [class.locked]="customer.isLocked"
+            >
+              {{ customer.isLocked ? 'Locked' : 'Active' }}
+            </span>
+          </td>
+          <td>
+            <button
+              class="btn-action"
+              [class.lock]="!customer.isLocked"
+              [class.unlock]="customer.isLocked"
+              [disabled]="processingId === customer.id"
+              (click)="lockCustomer(customer)"
+            >
+              <span *ngIf="processingId !== customer.id">
+                {{ customer.isLocked ? 'Unlock' : 'Lock' }}
+              </span>
+              <span *ngIf="processingId === customer.id">...</span>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="customers.length === 0">
+          <td colspan="6" class="empty-row">No customers found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

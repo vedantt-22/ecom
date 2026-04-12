@@ -1,1 +1,126 @@
-<p>navbar works!</p>
+<nav class="navbar">
+
+  <!-- ── Brand ──────────────────────────────────────────────── -->
+  <div class="nav-brand">
+    <a routerLink="/" (click)="closeMenu()">
+      <span class="brand-icon">🛒</span>
+      <span class="brand-name">ShopApp</span>
+    </a>
+  </div>
+
+  <!-- ── Desktop Navigation ─────────────────────────────────── -->
+  <div class="nav-links" [class.open]="menuOpen">
+
+    <!-- Public links — visible to everyone -->
+    <a routerLink="/"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: true }"
+       (click)="closeMenu()">
+      Home
+    </a>
+
+    <a routerLink="/products"
+       routerLinkActive="active"
+       (click)="closeMenu()">
+      Products
+    </a>
+
+    <!-- ── Guest links ───────────────────────────────────────── -->
+    <ng-container *ngIf="isGuest">
+      <a routerLink="/login"
+         routerLinkActive="active"
+         class="nav-btn nav-btn-outline"
+         (click)="closeMenu()">
+        Login
+      </a>
+      <a routerLink="/register"
+         routerLinkActive="active"
+         class="nav-btn nav-btn-primary"
+         (click)="closeMenu()">
+        Register
+      </a>
+    </ng-container>
+
+    <!-- ── Customer links ────────────────────────────────────── -->
+    <ng-container *ngIf="isCustomer">
+
+      <!-- Cart with badge -->
+      <a routerLink="/cart"
+         routerLinkActive="active"
+         class="nav-cart"
+         (click)="closeMenu()">
+        <span class="cart-icon">🛒</span>
+        <span class="cart-label">Cart</span>
+        <span class="cart-badge" *ngIf="cartCount > 0">
+          {{ cartCount > 99 ? '99+' : cartCount }}
+        </span>
+      </a>
+
+      <a routerLink="/orders"
+         routerLinkActive="active"
+         (click)="closeMenu()">
+        Orders
+      </a>
+
+      <!-- User avatar dropdown -->
+      <div class="nav-user-menu" (clickOutside)="closeMenu()">
+        <a routerLink="/profile"
+           routerLinkActive="active"
+           class="nav-avatar"
+           title="{{ currentUser?.name }}"
+           (click)="closeMenu()">
+          <span class="avatar-circle">{{ userInitial }}</span>
+          <span class="avatar-name">{{ currentUser?.name }}</span>
+        </a>
+      </div>
+
+      <button class="nav-btn nav-btn-outline logout-btn" (click)="logout()">
+        Logout
+      </button>
+
+    </ng-container>
+
+    <!-- ── Admin links ───────────────────────────────────────── -->
+    <ng-container *ngIf="isAdmin">
+
+      <a routerLink="/admin"
+         routerLinkActive="active"
+         class="nav-btn nav-btn-admin"
+         (click)="closeMenu()">
+        Admin Panel
+      </a>
+
+      <!-- Admin avatar -->
+      <div class="nav-avatar admin-avatar">
+        <span class="avatar-circle admin-circle">{{ userInitial }}</span>
+        <span class="avatar-name">{{ currentUser?.name }}</span>
+      </div>
+
+      <button class="nav-btn nav-btn-outline logout-btn" (click)="logout()">
+        Logout
+      </button>
+
+    </ng-container>
+
+  </div>
+
+  <!-- ── Mobile Hamburger ───────────────────────────────────── -->
+  <button
+    class="hamburger"
+    (click)="toggleMenu()"
+    [class.open]="menuOpen"
+    aria-label="Toggle navigation menu"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+</nav>
+
+<!-- Overlay to close menu on mobile when clicking outside -->
+<div
+  class="menu-overlay"
+  *ngIf="menuOpen"
+  (click)="closeMenu()"
+></div>

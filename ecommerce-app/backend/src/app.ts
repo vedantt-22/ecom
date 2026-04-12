@@ -14,6 +14,10 @@ import adminRoutes from "./routes/admin.routes";
 import profileRoutes from "./routes/profile.routes";
 import searchRoutes from "./routes/search.routes";
 import helmet from "helmet";
+import addressRoutes from "./routes/address.routes";
+import reviewRoutes  from "./routes/review.routes";
+import paymentRoutes from "./routes/payment.routes";
+
 
 
 dotenv.config();
@@ -52,6 +56,9 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/api/addresses", addressRoutes);
+app.use("/api/products/:productId/reviews", reviewRoutes);
+app.use("/api/payments", paymentRoutes);
 
 
 

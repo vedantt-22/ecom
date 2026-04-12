@@ -1,0 +1,75 @@
+/* dashboard.component.css */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-left: 4px solid #1a1a2e;
+}
+
+.stat-card.warn { border-left-color: #e94560; }
+.stat-card.info { border-left-color: #337ab7; }
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+
+.quick-nav h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 1rem;
+}
+
+.quick-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.quick-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  text-decoration: none;
+  color: #1a1a2e;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.quick-card:hover {
+  border-color: #e94560;
+  transform: translateY(-2px);
+}
+
+.quick-icon { font-size: 1.8rem; }
+
+.loading-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 4rem;
+}

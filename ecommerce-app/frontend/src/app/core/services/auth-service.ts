@@ -61,6 +61,15 @@ export class AuthService {
       );
   }
 
+  updateLocalUser(updatedData: Partial<Usermodel>): void {
+    const current = this.currentUser;
+    if (current) {
+      const updatedUser = { ...current, ...updatedData };
+      this.currentUserSubject.next(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+  }
+
   logout(): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/logout`, {})
       .pipe(
