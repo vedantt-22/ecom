@@ -16,7 +16,22 @@ export class OrderService {
   private readonly http = inject(HttpClient);
 
   checkout(data: CheckoutRequestmodel): Observable<CheckoutResponsemodel> {
-    return this.http.post<CheckoutResponsemodel>(`${this.apiUrl}/orders/checkout`, data);
+    return this.http
+      .post<CheckoutResponsemodel | Ordermodel>(`${this.apiUrl}/orders/checkout`, data)
+      .pipe(
+        map((res) => {
+          if (res && typeof res === 'object' && 'data' in res) {
+            return res as CheckoutResponsemodel;
+          }
+
+          return {
+            success: true,
+            statusCode: 201,
+            message: 'Order placed successfully.',
+            data: res as Ordermodel,
+          };
+        })
+      );
   }
 
   getMyOrders(): Observable<Ordermodel[]> {

@@ -15,8 +15,7 @@ async function runSeeds(): Promise<void> {
     console.log("Seeding admin user...");
     await seedAdmin();
 
-    // Taxonomy must run before products
-    // because products depend on SubCategory rows existing
+    // Taxonomy must run before products because products depend on subcategories.
     console.log("Seeding taxonomy...");
     await seedTaxonomy();
 
@@ -27,7 +26,6 @@ async function runSeeds(): Promise<void> {
   } catch (error) {
     console.error("Seed failed:", error);
   } finally {
-    // Always close the connection when done
     await AppDataSource.destroy();
     process.exit(0);
   }

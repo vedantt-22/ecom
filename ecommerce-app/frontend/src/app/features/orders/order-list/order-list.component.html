@@ -44,7 +44,7 @@
             *ngIf="item.product"
             [src]="item.product.imageUrl"
             [alt]="item.product?.name"
-            (error)="item.product.imageUrl='/images/placeholder.png'"
+            (error)="item.product.imageUrl = '/images/placeholder.png'"
           />
           <div class="deleted-thumb" *ngIf="!item.product">?</div>
         </div>

@@ -34,7 +34,7 @@
           <h2>Items Ordered</h2>
           <div class="order-item" *ngFor="let item of order.items">
             <div class="item-image">
-              <img [src]="item.product?.imageUrl || '/images/placeholder.png'" [alt]="item.product?.name">
+              <img [src]="item.product?.imageUrl || '/images/placeholder.png'" [alt]="item.product?.name" (error)="item.product && (item.product.imageUrl = '/images/placeholder.png')">
             </div>
             <div class="item-info">
               <h3>{{ item.product?.name || 'Product no longer available' }}</h3>

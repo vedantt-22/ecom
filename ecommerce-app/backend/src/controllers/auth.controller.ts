@@ -13,6 +13,25 @@ const COOKIE_OPTIONS = {
 
 export class AuthController {
 
+  session = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+      const user = req.user as any;
+
+      if (!user) {
+        res.status(200).json({ authenticated: false, user: null });
+        return;
+      }
+
+      res.status(200).json({
+        authenticated: true,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
+  });
+
   register = asyncHandler(async (req: Request, res: Response): Promise<void> => {
       const { name, email, password } = req.body;
 

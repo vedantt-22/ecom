@@ -2,16 +2,27 @@ import { AppDataSource } from "../data-source";
 import { Cart } from "../entities/Cart";
 import { Product } from "../entities/Product";
 import { CartItem } from "../entities/CartItem";
+import path from "path";
 
 const cartRepo = () => AppDataSource.getRepository(Cart);
 const cartItemRepo = () => AppDataSource.getRepository(CartItem);
 const productRepo = () => AppDataSource.getRepository(Product);
 
 function buildImageUrl(imagePath: string | null): string {
-    if (!imagePath) {
-        return "/images/placeholder.png";
+    if (!imagePath) return "";
+
+    const normalized = imagePath.trim();
+    if (!normalized) return "";
+
+    if (
+        /^https?:\/\//i.test(normalized) ||
+        normalized.startsWith("/images/") ||
+        normalized.startsWith("data:image/")
+    ) {
+        return normalized;
     }
-    return `/images/${imagePath}`;
+
+    return `/images/${path.basename(normalized)}`;
 }
 
 function formatCart(cart: Cart) {

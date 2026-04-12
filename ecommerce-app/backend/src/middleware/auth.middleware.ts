@@ -19,6 +19,14 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     })(req, res, next); // invoke the middleware immediately with the req, res, next parameters
     
 }
+
+export function optionalAuth(req: Request, _res: Response, next: NextFunction): void {
+    passport.authenticate("jwt", { session: false }, (_err: any, user: any) => {
+        req.user = user || undefined;
+        next();
+    })(req, _res, next);
+}
+
 export function isGuest(req: Request, res: Response, next: NextFunction): void {
     const token = req.cookies?.["token"];
     if(token) {

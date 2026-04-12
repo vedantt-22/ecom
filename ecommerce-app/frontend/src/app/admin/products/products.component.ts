@@ -10,6 +10,7 @@ import { AdminService }        from '../../core/services/admin.service';
 
 @Component({
   selector: 'app-products',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './products.component.html',
   styleUrl: './products.component.css'

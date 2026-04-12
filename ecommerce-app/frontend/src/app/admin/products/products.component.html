@@ -159,7 +159,7 @@
               class="product-thumb"
               [src]="product.imageUrl"
               [alt]="product.name"
-              (error)="product.imageUrl='/images/placeholder.png'"
+              (error)="product.imageUrl = '/images/placeholder.png'"
             />
           </td>
           <td class="product-name-cell">{{ product.name }}</td>

@@ -2,10 +2,15 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Usermodel, ProfileResponsemodel, ResetPasswordPayload } from '../models';
+import { Usermodel, ResetPasswordPayload } from '../models';
+
+interface SessionResponse {
+  authenticated: boolean;
+  user: Usermodel | null;
+}
 
 type RegisterRequest = Pick<Usermodel, 'name' | 'email'> & { password: string };
-type LoginRequest = Pick<Usermodel, 'name'> & { password: string };
+type LoginRequest = Pick<Usermodel, 'email'> & { password: string };
 
 @Injectable({
   providedIn: 'root',
@@ -42,10 +47,14 @@ export class AuthService {
   // --- Auth Actions ---
 
   private checkSession(): void {
-    this.http.get<ProfileResponsemodel>(`${this.apiUrl}/profile`)
+    this.http.get<SessionResponse>(`${this.apiUrl}/auth/session`)
       .subscribe({
-        next: (res) => this.currentUserSubject.next(res.user),
-        error: () => this.currentUserSubject.next(null),
+        next: (res) => {
+          this.currentUserSubject.next(res.user);
+        },
+        error: () => {
+          this.currentUserSubject.next(null);
+        },
       });
   }
 
@@ -57,7 +66,9 @@ export class AuthService {
     return this.http
       .post<{ user: Usermodel }>(`${this.apiUrl}/auth/login`, credentials)
       .pipe(
-        tap((res) => this.currentUserSubject.next(res.user))
+        tap((res) => {
+          this.currentUserSubject.next(res.user);
+        })
       );
   }
 

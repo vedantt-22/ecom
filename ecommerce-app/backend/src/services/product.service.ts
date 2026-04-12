@@ -12,13 +12,25 @@ const subCategoryRepo = () => AppDataSource.getRepository(SubCategory);
 const categoryRepo = () => AppDataSource.getRepository(Category);
 
 function buildImageUrl(imagePath: string | null): string {
-    if(!imagePath) return "/images/placeholder.png";
-    return `/images/${path.basename(imagePath)}`;
+    if(!imagePath) return "";
+
+    const normalized = imagePath.trim();
+    if (!normalized) return "";
+
+    if (
+        /^https?:\/\//i.test(normalized) ||
+        normalized.startsWith("/images/") ||
+        normalized.startsWith("data:image/")
+    ) {
+        return normalized;
+    }
+
+    return `/images/${path.basename(normalized)}`;
 }
 
 function deleteImageFile(filename: string | null): void {
     if (!filename) return;
-    const filePath = path.join(__dirname, "../../public/ProductImages", filename);
+    const filePath = path.join(__dirname, "../../ProductImages", filename);
     if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
     }

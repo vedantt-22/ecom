@@ -1,29 +1,23 @@
 import { Request, Response, NextFunction } from "express";
 
 export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction): void {
-
-    console.error("Error:", err); // Log the error for debugging
-
-    // Customize the response based on error type or properties
-    if (err.name === "UnauthorizedError") {
-        res.status(401).json({ error: "Unauthorized: Invalid token." });
-    }
-    else if (err.name === "ValidationError") {
-        res.status(400).json({ error: "Bad Request: Validation failed.", details: err.message });
-    }
-    else {
-        res.status(500).json({ error: "Internal Server Error: An unexpected error occurred." });
-    }
-
-      // Log internally — full error for debugging
+  // Log internally — full error for debugging.
   console.error("Unhandled error:", err.message);
   console.error(err.stack);
 
-  // ── Known error types ────────────────────────────────────
-  // These are errors we can give meaningful messages for.
+  // Passport/JWT authentication errors
+  if (err.name === "UnauthorizedError") {
+    res.status(401).json({ error: "Unauthorized: Invalid token." });
+    return;
+  }
 
-  // Foreign key constraint — trying to delete something
-  // that is referenced by another table
+  // Generic validation style errors
+  if (err.name === "ValidationError") {
+    res.status(400).json({ error: "Bad Request: Validation failed." });
+    return;
+  }
+
+  // Foreign key constraint — trying to delete something referenced by another table
   if (
     err.message?.includes("FOREIGN KEY") ||
     err.message?.includes("SQLITE_CONSTRAINT")
@@ -47,12 +41,10 @@ export function errorHandler(err: Error, req: Request, res: Response, next: Next
     return;
   }
 
-  // ── Unknown errors ───────────────────────────────────────
-  // Never expose internal details to the client.
+  // Unknown errors: never expose internals.
   res.status(500).json({
     error: "An unexpected error occurred. Please try again.",
   });
-
 }
 
 

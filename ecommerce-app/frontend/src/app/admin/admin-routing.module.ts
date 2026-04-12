@@ -11,21 +11,21 @@ const routes: Routes = [
 
   {
     path: 'products',
-    loadChildren: () => import('./products/products.component').then(m => m.ProductsComponent),
+    loadComponent: () => import('./products/products.component').then(m => m.ProductsComponent),
   },
 
   {
     path: 'dashboard',
-    loadChildren: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
+    loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
   },
   {
     path: 'orders',
-    loadChildren: () => import('./orders/orders.component').then(m => m.OrdersComponent),
+    loadComponent: () => import('./orders/orders.component').then(m => m.OrdersComponent),
   },
 
   {
     path: 'customers',
-    loadChildren: () => import('./customers/customers.component').then(m => m.CustomersComponent),
+    loadComponent: () => import('./customers/customers.component').then(m => m.CustomersComponent),
 
   }
 

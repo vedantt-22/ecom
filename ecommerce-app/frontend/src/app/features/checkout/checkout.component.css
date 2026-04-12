@@ -47,6 +47,40 @@
   margin-bottom: 1.2rem;
 }
 
+.address-quick-add {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #fafafa;
+}
+
+.address-quick-add h3 {
+  margin: 0 0 0.8rem;
+  font-size: 0.95rem;
+  color: #1a1a2e;
+}
+
+.address-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  margin-bottom: 0.8rem;
+}
+
+.address-full-row {
+  grid-column: 1 / -1;
+}
+
+.default-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.85rem;
+  color: #555;
+}
+
 /* ── Payment options ──────────────────────────────────────── */
 .payment-options {
   display: grid;
@@ -187,4 +221,5 @@
 @media (max-width: 900px) {
   .checkout-layout { grid-template-columns: 1fr; }
   .payment-options { grid-template-columns: 1fr 1fr; }
+  .address-grid { grid-template-columns: 1fr; }
 }

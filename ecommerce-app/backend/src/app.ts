@@ -17,6 +17,7 @@ import helmet from "helmet";
 import addressRoutes from "./routes/address.routes";
 import reviewRoutes  from "./routes/review.routes";
 import paymentRoutes from "./routes/payment.routes";
+import { errorHandler } from "./middleware/error.middleware";
 
 
 
@@ -36,6 +37,18 @@ app.use(cookieParser());
 app.use(passport.initialize());
 app.use(express.json());           // parse JSON request bodies
 app.use(express.urlencoded({ extended: true })); // parse form data
+
+app.use(helmet({
+  // crossOriginResourcePolicy must be set to cross-origin
+  // so express.static can serve product images to Angular
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
+
+app.use(compression({
+  // Only compress responses larger than 1KB
+  // Compressing tiny responses wastes CPU
+  threshold: 1024,
+}));
 
 // --- Static Files ---
 // Product images served directly - no auth needed
@@ -60,33 +73,6 @@ app.use("/api/addresses", addressRoutes);
 app.use("/api/products/:productId/reviews", reviewRoutes);
 app.use("/api/payments", paymentRoutes);
 
-
-
-// --- API Routes (will be added in later steps) ---
-// app.use("/api/auth", authLimiter, authRoutes);
-// app.use("/api/products", productRoutes);
-// etc.
-
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong on our end!" });
-});
-
-
-
-app.use(helmet({
-  // crossOriginResourcePolicy must be set to cross-origin
-  // so express.static can serve product images to Angular
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-}));
-
-
-app.use(compression({
-  // Only compress responses larger than 1KB
-  // Compressing tiny responses wastes CPU
-  threshold: 1024,
-}));
-
 // --- Angular catch-all (Step 20) ---
 // Must be LAST - after all API routes
 if (process.env.NODE_ENV === "production") {
@@ -99,5 +85,7 @@ if (process.env.NODE_ENV === "production") {
     );
   });
 }
+
+app.use(errorHandler);
 
 export default app;

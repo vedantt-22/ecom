@@ -17,11 +17,11 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req: Request, file: Express.Multer.File, callback: FileFilterCallback) => {
-    const allowedTypes = ["images/jpeg", "images/png", "images/gif", "images/webp", "images/jpg"];
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
     if (allowedTypes.includes(file.mimetype)) {
         callback(null, true); //accept these file types
     } else {
-        callback(new Error("Invalid file type")); //reject other file types with Error
+        callback(new Error("Only JPEG, PNG, GIF, and WEBP image files are allowed.")); //reject other file types with Error
     }
 };
 

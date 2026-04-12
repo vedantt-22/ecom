@@ -23,6 +23,80 @@
         </p>
 
         <form [formGroup]="checkoutForm">
+          <div class="form-group">
+            <label for="shippingAddressId">Shipping Address</label>
+            <select id="shippingAddressId" formControlName="shippingAddressId" (change)="onAddressSelect()">
+              <option [ngValue]="null" disabled>Select your address</option>
+              <option *ngFor="let address of addresses" [ngValue]="address.id">
+                {{ address.label }} - {{ address.fullName }}, {{ address.addressLine1 }}, {{ address.city }}
+              </option>
+              <option [ngValue]="'__add_new__'">+ Add new address</option>
+            </select>
+            <small *ngIf="addresses.length === 0">No saved addresses found. Add one below.</small>
+          </div>
+
+          <div class="address-quick-add" *ngIf="isAddingAddress" [formGroup]="newAddressForm">
+            <h3>Add New Address</h3>
+
+            <div class="alert alert-success" *ngIf="addressMsg">{{ addressMsg }}</div>
+            <div class="alert alert-error" *ngIf="addressError">{{ addressError }}</div>
+
+            <div class="address-grid">
+              <div class="form-group">
+                <label>Label</label>
+                <select formControlName="label">
+                  <option value="Home">Home</option>
+                  <option value="Office">Office</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" formControlName="fullName" />
+              </div>
+
+              <div class="form-group">
+                <label>Phone</label>
+                <input type="text" formControlName="phone" maxlength="10" />
+              </div>
+
+              <div class="form-group">
+                <label>Pincode</label>
+                <input type="text" formControlName="pincode" maxlength="6" />
+              </div>
+
+              <div class="form-group address-full-row">
+                <label>Address Line 1</label>
+                <input type="text" formControlName="addressLine1" />
+              </div>
+
+              <div class="form-group address-full-row">
+                <label>Address Line 2 (optional)</label>
+                <input type="text" formControlName="addressLine2" />
+              </div>
+
+              <div class="form-group">
+                <label>City</label>
+                <input type="text" formControlName="city" />
+              </div>
+
+              <div class="form-group">
+                <label>State</label>
+                <input type="text" formControlName="state" />
+              </div>
+            </div>
+
+            <label class="default-check">
+              <input type="checkbox" formControlName="isDefault" />
+              Set as default address
+            </label>
+
+            <button type="button" class="btn btn-secondary" (click)="addNewAddress()">
+              Save Address
+            </button>
+          </div>
+
           <div class="payment-options">
             <label
               *ngFor="let method of paymentMethods"

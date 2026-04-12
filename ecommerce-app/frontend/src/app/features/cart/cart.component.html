@@ -13,7 +13,7 @@
     <div class="cart-layout" *ngIf="!isLoading && cart && cart.items.length > 0">
         <div class="cart-items">
             <div class="cart-item" *ngFor="let item of cart.items" [class.updating]="updatedItemId === item.id">
-                <img [src]="item.product.imageUrl" [alt]="item.product.name" class="cart-item-image">
+                <img [src]="item.product.imageUrl" [alt]="item.product.name" class="cart-item-image" (error)="item.product.imageUrl = '/images/placeholder.png'">
                 <div class="cart-item-details">
                     <h3>{{ item.product.name }}</h3>
                     <p>Price: ₹{{ item.product.price | number:'1.2-2' }}</p>

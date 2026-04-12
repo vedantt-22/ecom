@@ -37,6 +37,11 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const placed = this.route.snapshot.queryParamMap.get('placed');
+    if (placed === '1') {
+      this.isConfirmation = true;
+    }
+
     // If we already have the order from navigation state, don't API call
     if (this.order) return;
 

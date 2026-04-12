@@ -4,7 +4,8 @@ import { FormBuilder, ReactiveFormsModule, FormGroup, Validators } from '@angula
 import { CartService } from '../../core/services/cart-service';
 import { Router, RouterLink } from '@angular/router';
 import { OrderService } from '../../core/services/order-service';
-import { Cartmodel, CheckoutRequestmodel } from '../../core/models';
+import { AddressService } from '../../core/services/address.service';
+import { Addressmodel, Cartmodel, CheckoutRequestmodel, CreateAddressRequestmodel } from '../../core/models';
 @Component({
   selector: 'app-checkout',
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
@@ -13,10 +14,15 @@ import { Cartmodel, CheckoutRequestmodel } from '../../core/models';
 })
 export class CheckoutComponent {
   checkoutForm!: FormGroup;
+  newAddressForm!: FormGroup;
   cart: Cartmodel | null = null;
+  addresses: Addressmodel[] = [];
   isLoading = false;
   errorMsg = '';
+  addressError = '';
+  addressMsg = '';
   isPlaced = false;
+  isAddingAddress = false;
 
    paymentMethods = [
     { value: 'credit_card',      label: 'Credit Card',      icon: '💳' },
@@ -29,13 +35,29 @@ export class CheckoutComponent {
     private fb: FormBuilder,
     private cartService: CartService,
     private orderService: OrderService,
+    private addressService: AddressService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.checkoutForm = this.fb.group({
-      paymentMethod: ['cash_on_delivery', Validators.required]
+      paymentMethod: ['cash_on_delivery', Validators.required],
+      shippingAddressId: [null, Validators.required],
     });
+
+    this.newAddressForm = this.fb.group({
+      label: ['Home', Validators.required],
+      fullName: ['', [Validators.required, Validators.minLength(2)]],
+      phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      addressLine1: ['', [Validators.required, Validators.minLength(5)]],
+      addressLine2: [''],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      pincode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+      isDefault: [false],
+    });
+
+    this.loadAddresses();
 
     this.isLoading = true;
     this.cartService.loadCart().subscribe({
@@ -54,6 +76,78 @@ export class CheckoutComponent {
     });
   }
 
+  loadAddresses(preferredAddressId?: number): void {
+    this.addressService.loadAddresses().subscribe({
+      next: (addresses) => {
+        this.addresses = addresses;
+
+        if (addresses.length === 0) {
+          this.checkoutForm.patchValue({ shippingAddressId: '__add_new__' });
+          this.isAddingAddress = true;
+          this.errorMsg = 'Please add a shipping address before placing your order.';
+          return;
+        }
+
+        const selectedAddress = preferredAddressId
+          ? addresses.find((address) => address.id === preferredAddressId)
+          : undefined;
+        const defaultAddress = selectedAddress ?? addresses.find((address) => address.isDefault) ?? addresses[0];
+
+        this.checkoutForm.patchValue({ shippingAddressId: defaultAddress.id });
+        this.isAddingAddress = false;
+        this.errorMsg = '';
+      },
+      error: () => {
+        this.errorMsg = 'Failed to load addresses. Please try again later.';
+      },
+    });
+  }
+
+  onAddressSelect(): void {
+    const selected = this.checkoutForm.value.shippingAddressId;
+    this.isAddingAddress = selected === '__add_new__';
+
+    if (this.isAddingAddress) {
+      this.addressMsg = '';
+      this.addressError = '';
+      return;
+    }
+
+    this.addressError = '';
+  }
+
+  addNewAddress(): void {
+    if (this.newAddressForm.invalid) {
+      this.newAddressForm.markAllAsTouched();
+      return;
+    }
+
+    this.addressError = '';
+    this.addressMsg = '';
+
+    const payload = this.newAddressForm.value as CreateAddressRequestmodel;
+    this.addressService.createAddress(payload).subscribe({
+      next: (address) => {
+        this.addressMsg = 'Address added. Selected for this order.';
+        this.newAddressForm.reset({
+          label: 'Home',
+          fullName: '',
+          phone: '',
+          addressLine1: '',
+          addressLine2: '',
+          city: '',
+          state: '',
+          pincode: '',
+          isDefault: false,
+        });
+        this.loadAddresses(address.id);
+      },
+      error: (err) => {
+        this.addressError = err.error?.error || err.message || 'Failed to add address.';
+      },
+    });
+  }
+
   placeOrder(): void {
   this.checkoutForm.markAllAsTouched();
 
@@ -61,15 +155,32 @@ export class CheckoutComponent {
 
   this.isPlaced = true;
   this.errorMsg = '';
+  const selectedAddress = this.checkoutForm.value.shippingAddressId;
+
+  if (selectedAddress === '__add_new__') {
+    this.isPlaced = false;
+    this.errorMsg = 'Please add and select a shipping address first.';
+    return;
+  }
+
+  const shippingAddressId = Number(this.checkoutForm.value.shippingAddressId);
+
+  if (Number.isNaN(shippingAddressId) || shippingAddressId <= 0) {
+    this.isPlaced = false;
+    this.errorMsg = 'Please select a valid shipping address.';
+    return;
+  }
+
   const checkoutData: CheckoutRequestmodel = {
     paymentMethod: this.checkoutForm.value.paymentMethod,
-    shippingAddressId: Number(this.checkoutForm.value.shippingAddressId)
+    shippingAddressId
   };
   this.orderService.checkout(checkoutData).subscribe({
     next: (res) => {
       this.isPlaced = false;
       this.cartService.clearLocalState();
       this.router.navigate(['/orders', res.data.id], {
+        queryParams: { placed: '1' },
         state: { 
           order: res.data, 
           isConfirmation: true 

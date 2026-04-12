@@ -6,10 +6,28 @@ import { Order, PaymentMethod } from "../entities/Order";
 import { OrderItem } from "../entities/OrderItem";
 import { paymentService } from "./payment.service";
 import { Address } from "../entities/Address";
+import path from "path";
 
 const cartRepo = () => AppDataSource.getRepository(Cart);
 const orderRepo = () => AppDataSource.getRepository(Order);
 const addressRepo = () => AppDataSource.getRepository(Address);
+
+function buildImageUrl(imagePath: string | null | undefined): string {
+    if (!imagePath) return "";
+
+    const normalized = imagePath.trim();
+    if (!normalized) return "";
+
+    if (
+        /^https?:\/\//i.test(normalized) ||
+        normalized.startsWith("/images/") ||
+        normalized.startsWith("data:image/")
+    ) {
+        return normalized;
+    }
+
+    return `/images/${path.basename(normalized)}`;
+}
 
 // Standardized formatter to include address details
 function formatOrder(order: Order) {
@@ -33,7 +51,7 @@ function formatOrder(order: Order) {
             product: {
                 id: item.product?.id,
                 name: item.product?.name,
-                imageUrl: item.product?.imagePath ? `/images/${item.product.imagePath}` : "/images/placeholder.png",
+                imageUrl: buildImageUrl(item.product?.imagePath),
             }
         })),
     };
@@ -41,14 +59,35 @@ function formatOrder(order: Order) {
 
 export class OrderService {
 
-    async checkout(userId: number, paymentMethod: string, shippingAddressId: number) {
-        // 1. Validate Address ownership
-        const address = await addressRepo().findOne({
-            where: { id: shippingAddressId, userId }
-        });
+    async checkout(userId: number, paymentMethod: string, shippingAddressId?: number) {
+        let address: Address | null = null;
 
-        if (!address) {
-            return { success: false, statusCode: 400, message: "Please select a valid shipping address." };
+        // 1. Resolve shipping address:
+        //    - use provided id when present
+        //    - otherwise fall back to default address, then first saved address
+        if (shippingAddressId != null) {
+            address = await addressRepo().findOne({
+                where: { id: shippingAddressId, userId }
+            });
+
+            if (!address) {
+                return { success: false, statusCode: 400, message: "Please select a valid shipping address." };
+            }
+        } else {
+            address = await addressRepo().findOne({
+                where: { userId, isDefault: true }
+            });
+
+            if (!address) {
+                address = await addressRepo().findOne({
+                    where: { userId },
+                    order: { id: "ASC" },
+                });
+            }
+
+            if (!address) {
+                return { success: false, statusCode: 400, message: "Please add a shipping address before checkout." };
+            }
         }
 
         // 2. Load Cart with items and products
@@ -144,6 +183,67 @@ export class OrderService {
         } finally {
             await queryRunner.release();
         }
+    }
+
+    async getMyOrders(userId: number) {
+        const orders = await orderRepo().find({
+            where: { userId },
+            relations: ["items", "items.product", "shippingAddress"],
+            order: { createdAt: "DESC" },
+        });
+
+        return {
+            success: true,
+            statusCode: 200,
+            data: orders.map(formatOrder),
+        };
+    }
+
+    async getOrderById(userId: number, orderId: number, isAdmin: boolean) {
+        const order = await orderRepo().findOne({
+            where: { id: orderId },
+            relations: ["items", "items.product", "shippingAddress", "user"],
+        });
+
+        if (!order) {
+            return { success: false, statusCode: 404, message: "Order not found." };
+        }
+
+        if (!isAdmin && order.userId !== userId) {
+            return { success: false, statusCode: 403, message: "Access denied for this order." };
+        }
+
+        return {
+            success: true,
+            statusCode: 200,
+            data: formatOrder(order),
+        };
+    }
+
+    async getAllOrders(isAdmin: boolean) {
+        if (!isAdmin) {
+            return { success: false, statusCode: 403, message: "Admin access required." };
+        }
+
+        const orders = await orderRepo().find({
+            relations: ["items", "items.product", "shippingAddress", "user"],
+            order: { createdAt: "DESC" },
+        });
+
+        return {
+            success: true,
+            statusCode: 200,
+            data: orders.map((order) => ({
+                ...formatOrder(order),
+                user: order.user
+                    ? {
+                        id: order.user.id,
+                        name: order.user.name,
+                        email: order.user.email,
+                    }
+                    : null,
+            })),
+        };
     }
 }
 

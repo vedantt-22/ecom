@@ -82,5 +82,5 @@ export async function seedTaxonomy(): Promise<void> {
     }
   }
 
-  console.log("  Taxonomy seeded: 3 types, 6 categories, 18 sub-categories.");
+  console.log("Taxonomy seeded: 3 types, 6 categories, 18 sub-categories.");
 }

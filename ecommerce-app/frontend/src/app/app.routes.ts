@@ -62,7 +62,7 @@ export const routes: Routes = [
   },
 
   {
-    path: 'order/:id',
+    path: 'orders/:id',
     canActivate: [authGuard],
     loadComponent: () => import('./features/orders/order-detail/order-detail.component').then(m => m.OrderDetailComponent),
   },
@@ -76,7 +76,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [adminGuard, authGuard],
-    loadComponent: () => import('./admin/admin.module').then(m => m.AdminModule),
+    loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
   },
   {
     path: '**',

@@ -1,10 +1,12 @@
 import {Router} from "express";
 import { authController } from "../controllers/auth.controller";
-import { isGuest, requireAuth } from "../middleware/auth.middleware";
+import { isGuest, optionalAuth, requireAuth } from "../middleware/auth.middleware";
 import { authLimiter } from "../middleware/rateLimiter";
 
 
 const router = Router();
+
+router.get("/session", optionalAuth, authController.session);
 
 router.post("/register", authLimiter, isGuest, authController.register);
 router.post("/login", authLimiter, isGuest, authController.login);

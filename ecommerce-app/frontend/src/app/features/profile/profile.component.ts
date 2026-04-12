@@ -12,8 +12,9 @@ import { HttpClient } from '@angular/common/http';
 import { Subject, takeUntil } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth-service';
+import { AddressService } from '../../core/services/address.service';
 import { environment } from '../../../environments/environment';
-import { ProfileResponsemodel, Sessionmodel } from '../../core/models';
+import { Addressmodel, CreateAddressRequestmodel, ProfileResponsemodel, Sessionmodel } from '../../core/models';
 
 /** * Custom Validators 
  */
@@ -46,6 +47,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   // Forms
   profileForm!: FormGroup;
   passwordForm!: FormGroup;
+  addressForm!: FormGroup;
 
   // UI State
   profileMsg = '';
@@ -59,15 +61,23 @@ export class ProfileComponent implements OnInit, OnDestroy {
   sessions: Sessionmodel[] = [];
   loadingSessions = false;
 
+  addresses: Addressmodel[] = [];
+  loadingAddresses = false;
+  savingAddress = false;
+  addressMsg = '';
+  addressError = '';
+
   constructor(
     private fb: FormBuilder,
     public authService: AuthService,
+    private addressService: AddressService,
     private http: HttpClient
   ) {}
 
   ngOnInit(): void {
     this.initForms();
     this.loadSessions();
+    this.loadAddresses();
   }
 
   ngOnDestroy(): void {
@@ -91,11 +101,24 @@ export class ProfileComponent implements OnInit, OnDestroy {
       },
       { validators: passwordMatchValidator }
     );
+
+    this.addressForm = this.fb.group({
+      label: ['Home', Validators.required],
+      fullName: [user?.name ?? '', [Validators.required, Validators.minLength(2)]],
+      phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      addressLine1: ['', [Validators.required, Validators.minLength(5)]],
+      addressLine2: [''],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      pincode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+      isDefault: [false],
+    });
   }
 
   // Getters for easy template access
   get pf() { return this.profileForm.controls; }
   get pwf() { return this.passwordForm.controls; }
+  get af() { return this.addressForm.controls; }
 
   /**
    * Data Loading
@@ -113,6 +136,22 @@ export class ProfileComponent implements OnInit, OnDestroy {
           // err.message is already formatted by your Global Interceptor
           this.profileError = err.message;
           this.loadingSessions = false;
+        },
+      });
+  }
+
+  loadAddresses(): void {
+    this.loadingAddresses = true;
+    this.addressService.loadAddresses()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (addresses) => {
+          this.addresses = addresses;
+          this.loadingAddresses = false;
+        },
+        error: (err: Error) => {
+          this.addressError = err.message;
+          this.loadingAddresses = false;
         },
       });
   }
@@ -184,6 +223,78 @@ export class ProfileComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => this.loadSessions(),
         error: (err: Error) => alert(err.message),
+      });
+  }
+
+  addAddress(): void {
+    if (this.addressForm.invalid) {
+      this.addressForm.markAllAsTouched();
+      return;
+    }
+
+    this.savingAddress = true;
+    this.addressMsg = '';
+    this.addressError = '';
+
+    const payload = this.addressForm.value as CreateAddressRequestmodel;
+    this.addressService.createAddress(payload)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (address) => {
+          this.savingAddress = false;
+          this.addressMsg = 'Address added successfully.';
+          this.addresses = [address, ...this.addresses.filter((a) => a.id !== address.id)];
+          this.addressForm.reset({
+            label: 'Home',
+            fullName: this.authService.currentUser?.name ?? '',
+            phone: '',
+            addressLine1: '',
+            addressLine2: '',
+            city: '',
+            state: '',
+            pincode: '',
+            isDefault: false,
+          });
+          this.loadAddresses();
+        },
+        error: (err: Error) => {
+          this.savingAddress = false;
+          this.addressError = err.message;
+        },
+      });
+  }
+
+  makeDefaultAddress(addressId: number): void {
+    this.addressMsg = '';
+    this.addressError = '';
+
+    this.addressService.setDefault(addressId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.addressMsg = 'Default address updated.';
+          this.loadAddresses();
+        },
+        error: (err: Error) => {
+          this.addressError = err.message;
+        },
+      });
+  }
+
+  deleteAddress(addressId: number): void {
+    this.addressMsg = '';
+    this.addressError = '';
+
+    this.addressService.deleteAddress(addressId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.addressMsg = 'Address deleted.';
+          this.loadAddresses();
+        },
+        error: (err: Error) => {
+          this.addressError = err.message;
+        },
       });
   }
 }

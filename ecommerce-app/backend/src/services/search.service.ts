@@ -6,6 +6,23 @@ import path from "path";
 
 const productRepo = () => AppDataSource.getRepository(Product);
 
+function buildImageUrl(imagePath: string | null): string {
+    if (!imagePath) return "";
+
+    const normalized = imagePath.trim();
+    if (!normalized) return "";
+
+    if (
+        /^https?:\/\//i.test(normalized) ||
+        normalized.startsWith("/images/") ||
+        normalized.startsWith("data:image/")
+    ) {
+        return normalized;
+    }
+
+    return `/images/${path.basename(normalized)}`;
+}
+
 export interface SearchParams {
   q?: string;
     typeId?: number;
@@ -98,7 +115,7 @@ export class SearchService {
         
         const data = products.map((p) => ({
             ...p,
-            imageUrl: p.imagePath ? `/images/${path.basename(p.imagePath)}` : "/images/placeholder.png",
+            imageUrl: buildImageUrl(p.imagePath),
         }));
 
         return {

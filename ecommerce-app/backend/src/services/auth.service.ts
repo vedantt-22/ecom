@@ -65,9 +65,11 @@ export class AuthService {
     async login(email: string, password: string, ip: string, userAgent: string) {
         const cleanEmail = validateInput(email).toLowerCase();
 
-        const user = await userRepo().findOne({
-            where: { email: cleanEmail }
-        });
+        const user = await userRepo()
+            .createQueryBuilder("user")
+            .addSelect("user.passwordHash")
+            .where("user.email = :email", { email: cleanEmail })
+            .getOne();
 
         // 1. Check user existence
         if (!user) {
@@ -80,6 +82,10 @@ export class AuthService {
         }
 
         // 3. Verify password
+        if (!user.passwordHash) {
+            return { success: false, statusCode: 401, message: "Invalid email or password" };
+        }
+
         const match = await bcrypt.compare(password, user.passwordHash);
         if (!match) {
             return { success: false, statusCode: 401, message: "Invalid email or password" };

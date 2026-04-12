@@ -6,14 +6,22 @@ export class OrderController {
 
     checkout = asyncHandler(async (req: Request, res: Response): Promise<void> => {
         const userId = Number(req.user?.id);
-        const { paymentMethod } = req.body;
+        const { paymentMethod, shippingAddressId } = req.body;
+        const parsedShippingAddressId = shippingAddressId != null
+            ? Number(shippingAddressId)
+            : undefined;
 
         if(!paymentMethod) {
             res.status(400).json({ message: "Payment method is required." });
             return;
         }
 
-        const result = await orderService.checkout(userId, paymentMethod);
+        if (shippingAddressId != null && (parsedShippingAddressId == null || Number.isNaN(parsedShippingAddressId))) {
+            res.status(400).json({ message: "Valid shipping address is required." });
+            return;
+        }
+
+        const result = await orderService.checkout(userId, paymentMethod, parsedShippingAddressId);
 
         if (!result.success) {
             res.status(result.statusCode).json({ message: result.message });
