@@ -132,7 +132,9 @@
       <footer class="grid-footer" *ngIf="!isLoading && totalPages > 1">
         <app-pagination 
           [currentPage]="currentPage" 
-          [total]="totalPages" 
+          [totalPages]="totalPages"
+          [total]="total"
+          [pageSize]="pageSize"
           (pageChange)="onPageChange($event)">
         </app-pagination>
       </footer>

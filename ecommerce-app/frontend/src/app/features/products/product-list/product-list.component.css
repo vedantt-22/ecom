@@ -82,6 +82,17 @@
   transition: var(--transition);
 }
 
+.btn-clear {
+  border: none;
+  color: whitesmoke;
+  background-color: var(--bg-soft);
+  border-radius: 20px;
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+  font-size: 1.25rem;
+  margin-bottom: 20px;
+}
+
 .btn-search:hover {
   transform: translateY(-1px);
   filter: brightness(1.1);

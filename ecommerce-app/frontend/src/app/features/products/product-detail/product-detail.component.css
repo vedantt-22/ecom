@@ -66,10 +66,66 @@
   transition: var(--transition);
 }
 
+.btn-share {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+
+  background-color: var(--bg-soft);
+  color: var(--text-primary);
+  cursor: pointer;
+
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.btn-share:hover {
+  background-color: var(--bg-soft);
+}
+
+.btn-share:active {
+  transform: scale(0.96);
+}
+
+/* Icon */
+.btn-share .icon {
+  font-size: 16px;
+}
+
+/* Tooltip */
+.share-tooltip {
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+
+  background-color: #111;
+  color: #fff;
+  padding: 5px 8px;
+  border-radius: 4px;
+
+  font-size: 12px;
+  white-space: nowrap;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+/* Show tooltip on hover */
+.btn-share:hover .share-tooltip {
+  opacity: 1;
+}
+
 .main-image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit:contain;
   transition: transform 0.5s ease;
 }
 
@@ -151,12 +207,20 @@
 .quantity-selector {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   background: var(--bg-soft);
   border-radius: 999px;
   padding: 0.25rem;
+  width: 50%;
 }
 
+.control-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
 .quantity-selector button {
   width: 2.5rem;
   height: 2.5rem;

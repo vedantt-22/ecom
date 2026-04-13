@@ -18,6 +18,8 @@ import addressRoutes from "./routes/address.routes";
 import reviewRoutes  from "./routes/review.routes";
 import paymentRoutes from "./routes/payment.routes";
 import { errorHandler } from "./middleware/error.middleware";
+import fs from "fs";
+
 
 
 
@@ -42,6 +44,14 @@ app.use(helmet({
   // crossOriginResourcePolicy must be set to cross-origin
   // so express.static can serve product images to Angular
   crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"], // allow images from same origin, data URIs, and blob URLs
+      scriptSrc: ["'self'"], // allow scripts only from same origin
+      styleSrc: ["'self'", "'unsafe-inline'"], // allow styles from same origin and inline styles (for Angular)
+    },
+  },
 }));
 
 app.use(compression({
@@ -53,13 +63,6 @@ app.use(compression({
 // --- Static Files ---
 // Product images served directly - no auth needed
 app.use("/images", express.static(path.join(__dirname, "../../ProductImages")));
-
-// Angular build output served in production
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(
-    path.join(__dirname, "../../frontend/dist/frontend")
-  ));
-}
 
 app.use("/api/auth", authRoutes);
 app.use("/api/taxonomy", taxonomyRoutes);
@@ -73,18 +76,23 @@ app.use("/api/addresses", addressRoutes);
 app.use("/api/products/:productId/reviews", reviewRoutes);
 app.use("/api/payments", paymentRoutes);
 
-// --- Angular catch-all (Step 20) ---
-// Must be LAST - after all API routes
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(
-    path.join(__dirname, "../../frontend/dist/frontend/browser")
-  ));
-  app.get("*", (_req, res) => {
-    res.sendFile(
-      path.join(__dirname, "../../frontend/dist/frontend/browser/index.html")
+// Serve Angular build output from dist folder in production.
+    const angularDistRoot = path.join(
+      __dirname,
+      "../../frontend/dist/frontend",
     );
-  });
-}
+    const angularBrowserPath = path.join(angularDistRoot, "browser");
+    const angularDistPath = fs.existsSync(angularBrowserPath)
+      ? angularBrowserPath
+      : angularDistRoot;
+    app.use(express.static(angularDistPath));
+
+ 
+    // SPA fallback for non-API routes.
+    app.get(/^\/(?!api).*/, (req, res) => {
+      res.sendFile(path.join(angularDistPath, "index.html"));
+    });
+
 
 app.use(errorHandler);
 

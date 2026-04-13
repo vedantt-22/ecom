@@ -138,6 +138,7 @@ small {
 
 .hero-grid {
   display: grid;
+  width: 1570px;
   grid-template-columns: 1fr 20rem;
   gap: var(--space-md);
 }
