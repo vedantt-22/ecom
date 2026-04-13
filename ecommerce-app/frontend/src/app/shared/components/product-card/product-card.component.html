@@ -44,12 +44,9 @@
         [class.loading]="isAddingToCart"
         [class.success]="addedToCart"
         [disabled]="isAddingToCart"
-        aria-label="Add to cart"
-      >
+        aria-label="Add to cart">
         <span class="btn-icon" *ngIf="!isAddingToCart && !addedToCart">🛒</span>
-        <span class="btn-text" *ngIf="!isAddingToCart && !addedToCart"
-          >Add</span
-        >
+        <span class="btn-text" *ngIf="!isAddingToCart && !addedToCart">Add</span>
 
         <div class="loader" *ngIf="isAddingToCart"></div>
 

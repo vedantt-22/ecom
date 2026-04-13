@@ -24,10 +24,20 @@
   background: var(--bg-deep);
   color: var(--text-primary);
   min-height: 100vh;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'sans-serif', Arial, sans-serif;
   line-height: 1.5;
-  padding-bottom: 3rem; /* 48px */
+  padding-bottom: 3rem;
 }
+
+.text-link-btn {
+  color: var(--accent-gradient);
+  cursor: pointer;
+  padding: 20px;
+  text-align: right;
+  transition: var(--transition);
+}
+
+
 
 .container {
   max-width: 1240px;
@@ -46,9 +56,14 @@ small { font-size: 0.875rem; color: var(--text-secondary); }
   background: var(--panel-bg);
   backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
+  width: 100%;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
   transition: var(--transition);
+}
+
+.h3-text {
+  text-align: center;
 }
 
 .primary-cta-btn {
@@ -187,6 +202,12 @@ small { font-size: 0.875rem; color: var(--text-secondary); }
   font-size: 0.875rem;
 }
 
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2.5rem;
+}
 /* --- Responsive Adjustments --- */
 
 @media (max-width: 1024px) {

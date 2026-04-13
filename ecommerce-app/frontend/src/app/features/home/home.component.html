@@ -11,10 +11,7 @@
         <h1 id="hero-title" class="display-text">
           Shop Smarter With A <span class="gradient-text">Modern Dark Experience</span>
         </h1>
-        
-        <p class="body-text-large">
-          Explore thousands of products across Electronics, Stationery, Furniture and more with a glass-inspired interface.
-        </p>
+      
 
         <form class="search-form-group" (submit)="$event.preventDefault(); onSearch()" role="search">
           <div class="input-glass-container">
@@ -37,12 +34,6 @@
             </button>
           </div>
         </form>
-
-        <div class="trust-pill-group">
-          <span class="trust-pill"><i class="dot"></i> Secure checkout</span>
-          <span class="trust-pill"><i class="dot"></i> Fast delivery</span>
-          <span class="trust-pill"><i class="dot"></i> Curated products</span>
-        </div>
       </article>
     </div>
   </header>
@@ -51,7 +42,6 @@
     <nav class="sidebar-nav glass-panel" aria-label="Category navigation">
       <div class="section-title-area">
         <h2 class="h3-text">Categories</h2>
-        <p class="caption-text">Quick navigation</p>
       </div>
 
       <div class="category-stack">
@@ -62,7 +52,6 @@
           <div class="nav-icon-box">{{ type.name?.[0] || '?' }}</div>
           <div class="nav-content">
             <span class="nav-title">{{ type.name }}</span>
-            <span class="nav-subtitle">{{ type.categories?.length || 0 }} sub-categories</span>
           </div>
         </a>
       </div>
