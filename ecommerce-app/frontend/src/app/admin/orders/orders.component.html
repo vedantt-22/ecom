@@ -1,101 +1,114 @@
-<!-- admin-orders.component.html -->
-<div class="admin-page">
-  <h1 class="admin-title">Orders</h1>
+<div class="admin-orders-page">
+  <header class="page-header">
+    <div class="title-stack">
+      <h1>Order Management</h1>
+      <p class="subtitle">Monitor and update customer fulfillment status</p>
+    </div>
+    
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="loadOrders()" [disabled]="isLoading">
+        <span class="refresh-icon" [class.spinning]="isLoading">↻</span> Refresh
+      </button>
+    </div>
+  </header>
 
-  <div class="alert alert-success" *ngIf="successMsg">{{ successMsg }}</div>
-  <div class="alert alert-error"   *ngIf="errorMsg">{{ errorMsg }}</div>
-
-  <div class="loading-wrapper" *ngIf="isLoading">
-    <div class="spinner"></div>
+  <div class="alert-container" *ngIf="successMsg || errorMsg">
+    <div class="alert alert-success fade-in" *ngIf="successMsg">
+      <span class="icon">✓</span> {{ successMsg }}
+    </div>
+    <div class="alert alert-error fade-in" *ngIf="errorMsg">
+      <span class="icon">⚠</span> {{ errorMsg }}
+    </div>
   </div>
 
-  <div class="orders-list" *ngIf="!isLoading">
-
-    <div class="order-row" *ngFor="let order of orders">
-
-      <!-- Summary row -->
-      <div
-        class="order-summary-row"
-        (click)="toggleOrder(order.id)"
-        [class.expanded]="expandedOrderId === order.id"
-      >
-        <span class="order-id">#{{ order.id }}</span>
-
-        <div class="order-customer">
-          <span class="customer-name">{{ order.customer.name }}</span>
-          <span class="customer-email">{{ order.customer.email }}</span>
-        </div>
-
-        <span class="order-date">{{ order.createdAt | date:'mediumDate' }}</span>
-
-        <span class="order-amount">₹{{ order.totalAmount | number:'1.2-2' }}</span>
-
-        <span
-          class="status-pill"
-          [style.background]="getStatusColor(order.status) + '20'"
-          [style.color]="getStatusColor(order.status)"
-        >
-          {{ order.status | titlecase }}
-        </span>
-
-        <!-- Status update selector -->
-        <select
-          class="status-select"
-          [value]="order.status"
-          (change)="updateStatus(order.id, $any($event.target).value)"
-          (click)="$event.stopPropagation()"
-          [disabled]="updatingStatusId === order.id"
-        >
-          <option *ngFor="let s of statuses" [value]="s">
-            {{ s | titlecase }}
-          </option>
-        </select>
-
-        <span class="expand-icon">
-          {{ expandedOrderId === order.id ? '▲' : '▼' }}
-        </span>
-      </div>
-
-      <!-- Expanded detail -->
-      <div class="order-detail-row" *ngIf="expandedOrderId === order.id">
-
-        <div class="detail-loading" *ngIf="loadingDetail">
-          <div class="spinner"></div>
-        </div>
-
-        <div *ngIf="expandedOrder && !loadingDetail">
-
-          <div class="detail-meta">
-            <span>Payment: {{ formatPaymentMethod(expandedOrder.paymentMethod) }}</span>
-            <span>Items: {{ expandedOrder.items.length }}</span>
-            <span>Total: ₹{{ expandedOrder.totalAmount | number:'1.2-2' }}</span>
+  <div class="orders-grid" *ngIf="!isLoading; else loadingState">
+    <div class="order-card-wrapper" *ngFor="let order of orders" [class.is-expanded]="expandedOrderId === order.id">
+      
+      <div class="order-card glass hover-lift" (click)="toggleOrder(order.id)">
+        <div class="card-section info">
+          <span class="order-id">#{{ order.id }}</span>
+          <div class="customer-info">
+            <strong>{{ order.user?.name || 'Guest' }}</strong>
+            <span class="order-date">{{ order.createdAt | date:'medium' }}</span>
           </div>
+        </div>
 
-          <table class="detail-table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Qty</th>
-                <th>Price at Purchase</th>
-                <th>Line Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of expandedOrder.items">
-                <td>{{ item.product?.name ?? 'Deleted product' }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>₹{{ item.priceAtPurchase | number:'1.2-2' }}</td>
-                <td>₹{{ item.lineTotal | number:'1.2-2' }}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="card-section finance">
+          <span class="total-label">Total Amount</span>
+          <span class="total-value">{{ order.totalPrice | currency }}</span>
+        </div>
+
+        <div class="card-section status">
+          <div class="status-badge" [style.backgroundColor]="getStatusColor(order.status)">
+            {{ order.status | uppercase }}
+          </div>
+          <div class="loading-mini" *ngIf="updatingStatusId === order.id"></div>
+        </div>
+
+        <div class="card-section actions">
+          <button class="toggle-btn">
+            <span class="chevron" [class.up]="expandedOrderId === order.id">▼</span>
+          </button>
         </div>
       </div>
 
-    </div>
+      <div class="order-details-drawer" *ngIf="expandedOrderId === order.id">
+        <div class="detail-content glass-dark" *ngIf="!loadingDetail; else detailLoading">
+          
+          <div class="detail-grid">
+            <div class="detail-block items">
+              <h3>Purchased Items</h3>
+              <ul class="item-list">
+                <li *ngFor="let item of expandedOrder?.items">
+                  <span class="item-qty">{{ item.quantity }}x</span>
+                  <span class="item-name">{{ item.product?.title }}</span>
+                  <span class="item-price">{{ (item.price * item.quantity) | currency }}</span>
+                </li>
+              </ul>
+            </div>
 
-    <div class="empty-state" *ngIf="orders.length === 0">
-      <p>No orders have been placed yet.</p>
+            <div class="detail-block logistics">
+              <h3>Fulfillment Details</h3>
+              <div class="logistics-row">
+                <label>Payment Method:</label>
+                <span>{{ formatPaymentMethod(expandedOrder?.paymentMethod) }}</span>
+              </div>
+              <div class="logistics-row">
+                <label>Shipping Address:</label>
+                <address>{{ expandedOrder?.shippingAddress }}</address>
+              </div>
+            </div>
+
+            <div class="detail-block update-actions">
+              <h3>Change Status</h3>
+              <div class="status-selector">
+                <button 
+                  *ngFor="let st of statuses" 
+                  (click)="updateStatus(order.id, st)"
+                  class="status-btn"
+                  [class.active]="expandedOrder?.status === st"
+                  [style.borderColor]="getStatusColor(st)"
+                >
+                  {{ st }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+
+  <ng-template #loadingState>
+    <div class="skeleton-container">
+      <div class="skeleton-card" *ngFor="let i of [1,2,3,4]"></div>
+    </div>
+  </ng-template>
+
+  <ng-template #detailLoading>
+    <div class="loading-spinner-container">
+      <div class="spinner"></div>
+      <p>Fetching order specifics...</p>
+    </div>
+  </ng-template>
 </div>

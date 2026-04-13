@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, OnDestroy } from '@angular/core';
-import { CommonModule, DatePipe, DecimalPipe, TitleCasePipe } from '@angular/common';
+import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { OrderService } from '../../../core/services/order-service';
 import { Ordermodel } from '../../../core/models';
@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-order-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe, DecimalPipe, TitleCasePipe],
+  imports: [CommonModule, RouterLink, DatePipe, TitleCasePipe],
   templateUrl: './order-detail.component.html',
   styleUrl: './order-detail.component.css'
 })

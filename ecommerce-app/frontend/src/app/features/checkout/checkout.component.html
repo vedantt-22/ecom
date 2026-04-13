@@ -1,184 +1,127 @@
-<!-- checkout.component.html -->
-<div class="container">
+<div class="checkout-page dark-theme">
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
 
-  <div class="checkout-header">
-    <h1 class="page-title">Checkout</h1>
-    <a routerLink="/cart" class="back-link">← Back to Cart</a>
-  </div>
+  <main class="checkout-container">
+    <section class="checkout-main">
+      <header class="checkout-header">
+        <h1>Secure Checkout</h1>
+        <p>Complete your purchase by providing your details below.</p>
+      </header>
 
-  <!-- Loading -->
-  <div class="loading-wrapper" *ngIf="isLoading">
-    <div class="spinner"></div>
-  </div>
-
-  <div class="checkout-layout" *ngIf="!isLoading && cart">
-
-    <!-- Payment Method -->
-    <div class="checkout-main">
-      <div class="section-card">
-
-        <h2>Payment Method</h2>
-        <p class="section-subtitle">
-          No real payment is processed — this is a demo store.
-        </p>
-
-        <form [formGroup]="checkoutForm">
-          <div class="form-group">
-            <label for="shippingAddressId">Shipping Address</label>
-            <select id="shippingAddressId" formControlName="shippingAddressId" (change)="onAddressSelect()">
-              <option [ngValue]="null" disabled>Select your address</option>
-              <option *ngFor="let address of addresses" [ngValue]="address.id">
-                {{ address.label }} - {{ address.fullName }}, {{ address.addressLine1 }}, {{ address.city }}
-              </option>
-              <option [ngValue]="'__add_new__'">+ Add new address</option>
-            </select>
-            <small *ngIf="addresses.length === 0">No saved addresses found. Add one below.</small>
+      <form [formGroup]="checkoutForm" (ngSubmit)="placeOrder()">
+        
+        <div class="card glass-card">
+          <div class="card-title">
+            <span class="step-num">1</span>
+            <h3>Shipping Destination</h3>
           </div>
 
-          <div class="address-quick-add" *ngIf="isAddingAddress" [formGroup]="newAddressForm">
-            <h3>Add New Address</h3>
-
-            <div class="alert alert-success" *ngIf="addressMsg">{{ addressMsg }}</div>
-            <div class="alert alert-error" *ngIf="addressError">{{ addressError }}</div>
-
-            <div class="address-grid">
-              <div class="form-group">
-                <label>Label</label>
-                <select formControlName="label">
-                  <option value="Home">Home</option>
-                  <option value="Office">Office</option>
-                  <option value="Other">Other</option>
-                </select>
+          <div class="address-grid">
+            <label *ngFor="let addr of addresses" class="address-box" [class.selected]="checkoutForm.get('shippingAddressId')?.value == addr.id">
+              <input type="radio" formControlName="shippingAddressId" [value]="addr.id" (change)="onAddressSelect()">
+              <div class="box-content">
+                <div class="box-header">
+                  <span class="label-tag">{{ addr.label }}</span>
+                  <span class="default-badge" *ngIf="addr.isDefault">Default</span>
+                </div>
+                <strong>{{ addr.fullName }}</strong>
+                <p>{{ addr.addressLine1 }}, {{ addr.city }}</p>
+                <p class="phone">{{ addr.phone }}</p>
               </div>
+            </label>
 
+            <label class="address-box add-new" [class.selected]="isAddingAddress">
+              <input type="radio" formControlName="shippingAddressId" value="__add_new__" (change)="onAddressSelect()">
+              <div class="box-content flex-center">
+                <span class="plus-icon">+</span>
+                <span>Add New Address</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="new-address-form-wrapper" *ngIf="isAddingAddress" [formGroup]="newAddressForm">
+            <div class="form-divider">Enter New Details</div>
+            <div class="input-row">
               <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" formControlName="fullName" />
+                <input type="text" formControlName="fullName" placeholder="John Doe">
               </div>
-
               <div class="form-group">
-                <label>Phone</label>
-                <input type="text" formControlName="phone" maxlength="10" />
-              </div>
-
-              <div class="form-group">
-                <label>Pincode</label>
-                <input type="text" formControlName="pincode" maxlength="6" />
-              </div>
-
-              <div class="form-group address-full-row">
-                <label>Address Line 1</label>
-                <input type="text" formControlName="addressLine1" />
-              </div>
-
-              <div class="form-group address-full-row">
-                <label>Address Line 2 (optional)</label>
-                <input type="text" formControlName="addressLine2" />
-              </div>
-
-              <div class="form-group">
-                <label>City</label>
-                <input type="text" formControlName="city" />
-              </div>
-
-              <div class="form-group">
-                <label>State</label>
-                <input type="text" formControlName="state" />
+                <label>Phone Number</label>
+                <input type="text" formControlName="phone" placeholder="10-digit mobile">
               </div>
             </div>
-
-            <label class="default-check">
-              <input type="checkbox" formControlName="isDefault" />
-              Set as default address
-            </label>
-
-            <button type="button" class="btn btn-secondary" (click)="addNewAddress()">
-              Save Address
-            </button>
-          </div>
-
-          <div class="payment-options">
-            <label
-              *ngFor="let method of paymentMethods"
-              class="payment-option"
-              [class.selected]="checkoutForm.get('paymentMethod')?.value === method.value"
-            >
-              <input
-                type="radio"
-                formControlName="paymentMethod"
-                [value]="method.value"
-              />
-              <div class="payment-content">
-                <span class="payment-icon">{{ method.icon }}</span>
-                <span class="payment-label">{{ method.label }}</span>
-              </div>
-            </label>
-          </div>
-        </form>
-
-      </div>
-    </div>
-
-    <!-- Order Summary -->
-    <div class="checkout-summary">
-      <div class="section-card">
-
-        <h2>Order Summary</h2>
-
-        <div class="order-items">
-          <div class="order-item" *ngFor="let item of cart.items">
-            <div class="order-item-info">
-              <img
-                [src]="item.product.imageUrl"
-                [alt]="item.product.name"
-                (error)="item.product.imageUrl = '/images/placeholder.png'"
-              />
-              <div>
-                <p class="order-item-name">{{ item.product.name }}</p>
-                <p class="order-item-qty">Qty: {{ item.quantity }}</p>
-              </div>
+            <div class="form-group">
+              <label>Address Line 1</label>
+              <input type="text" formControlName="addressLine1" placeholder="Street, house no.">
             </div>
-            <span class="order-item-price">
-              ₹{{ item.lineTotal | number:'1.2-2' }}
-            </span>
+            <div class="input-row triplet">
+              <div class="form-group"><label>City</label><input type="text" formControlName="city"></div>
+              <div class="form-group"><label>State</label><input type="text" formControlName="state"></div>
+              <div class="form-group"><label>Pincode</label><input type="text" formControlName="pincode"></div>
+            </div>
+            <button type="button" class="btn-secondary" (click)="addNewAddress()">Save & Use Address</button>
+            <p class="error-text" *ngIf="addressError">{{ addressError }}</p>
+            <p class="success-text" *ngIf="addressMsg">{{ addressMsg }}</p>
           </div>
         </div>
 
-        <div class="summary-divider"></div>
-
-        <div class="summary-line">
-          <span>Subtotal ({{ cart.itemCount }} items)</span>
-          <span>₹{{ cart.total | number:'1.2-2' }}</span>
+        <div class="card glass-card">
+          <div class="card-title">
+            <span class="step-num">2</span>
+            <h3>Payment Method</h3>
+          </div>
+          <div class="payment-grid">
+            <label *ngFor="let method of paymentMethods" class="payment-option" [class.active]="checkoutForm.get('paymentMethod')?.value === method.value">
+              <input type="radio" formControlName="paymentMethod" [value]="method.value">
+              <span class="method-icon">{{ method.icon }}</span>
+              <span class="method-label">{{ method.label }}</span>
+            </label>
+          </div>
         </div>
-        <div class="summary-line">
-          <span>Shipping</span>
-          <span class="free-shipping">Free</span>
+      </form>
+    </section>
+
+    <aside class="checkout-summary">
+      <div class="summary-card sticky-card">
+        <h3>Order Summary</h3>
+        <div class="summary-items" *ngIf="cart">
+          <div class="summary-item" *ngFor="let item of cart.items">
+            <div class="item-img"><img [src]="item.product.imageUrl" [alt]="item.product.name"></div>
+            <div class="item-info">
+              <span class="item-name">{{ item.product.name }}</span>
+              <span class="item-qty">Qty: {{ item.quantity }}</span>
+            </div>
+            <span class="item-price">{{ item.lineTotal | currency }}</span>
+          </div>
         </div>
 
-        <div class="summary-divider"></div>
-
-        <div class="summary-total">
-          <span>Total</span>
-          <span>₹{{ cart.total | number:'1.2-2' }}</span>
+        <div class="bill-details">
+          <div class="bill-row"><span>Subtotal</span><span>{{ cart?.total | currency }}</span></div>
+          <div class="bill-row"><span>Shipping</span><span class="free-text">FREE</span></div>
+          <div class="bill-row total"><span>Total Amount</span><span>{{ cart?.total | currency }}</span></div>
         </div>
+          <button
+            type="button"
+            class="btn-clear-cart"
+            *ngIf="cart?.items?.length"
+            (click)="clearCart()"
+          >
+            Clear Cart
+          </button>
 
-        <div class="alert alert-error" *ngIf="errorMsg">{{ errorMsg }}</div>
-
-        <button
-          class="btn btn-primary btn-place-order"
-          (click)="placeOrder()"
-          [disabled]="isPlaced"
-        >
-          <span *ngIf="!isPlaced">Place Order</span>
-          <span *ngIf="isPlaced">Placing order...</span>
+        <button class="btn-place-order" [disabled]="isPlaced" (click)="placeOrder()">
+          <span *ngIf="!isPlaced">Confirm & Pay</span>
+          <div class="spinner" *ngIf="isPlaced"></div>
         </button>
-
-        <p class="secure-note">
-          🔒 Your order is secure and protected
-        </p>
-
+        
+        <p class="error-banner" *ngIf="errorMsg">{{ errorMsg }}</p>
+        
+        <div class="secure-footer">
+          <span>🔒 SSL Secure Payment</span>
+        </div>
       </div>
-    </div>
-
-  </div>
+    </aside>
+  </main>
 </div>

@@ -1,58 +1,135 @@
-/* pagination.component.css */
+:host {
+  /* Design Tokens */
+  --pagi-bg: rgba(255, 255, 255, 0.03);
+  --pagi-border: rgba(255, 255, 255, 0.08);
+  --accent-color: #8b5cf6; /* Electric Violet */
+  --accent-glow: rgba(139, 92, 246, 0.4);
+  --text-main: #f8fafc;
+  --text-muted: #64748b;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  display: block;
+  width: 100%;
+}
+
 .pagination-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #eee;
+  gap: 1.5rem;
+  padding: 2rem 0;
 }
 
+/* Info Summary Section */
 .pagination-info {
-  font-size: 0.85rem;
-  color: #888;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
 }
 
+.text-muted { color: var(--text-muted); }
+.text-highlight { color: var(--text-main); font-weight: 700; }
+
+/* The Glass Bar */
 .pagination-controls {
+  list-style: none;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  padding: 0.5rem;
+  background: var(--pagi-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--pagi-border);
+  border-radius: 100px; /* Pill shape */
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
-.page-btn {
-  min-width: 36px;
-  height: 36px;
-  border: 1px solid #ddd;
-  background: white;
-  border-radius: 6px;
-  font-size: 0.9rem;
+.page-item {
+  display: flex;
+  align-items: center;
+}
+
+/* Base Button Styles */
+.page-link, .nav-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.page-btn:hover:not(:disabled):not(.active) {
-  background: #f8f9fa;
-  border-color: #e94560;
-  color: #e94560;
+/* Numbered Circles */
+.page-link {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 0 2px;
 }
 
-.page-btn.active {
-  background: #e94560;
-  border-color: #e94560;
-  color: white;
-  font-weight: 600;
+.page-link:hover:not(.active) {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.page-btn:disabled {
-  opacity: 0.4;
+/* Active State */
+.page-link.active {
+  color: #fff;
+  background: var(--accent-color);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.active-indicator {
+  position: absolute;
+  bottom: -4px;
+  width: 4px;
+  height: 4px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--accent-color);
+}
+
+/* Navigation Arrows */
+.nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--accent-color);
+}
+
+.nav-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.1);
+  transform: scale(1.1);
+}
+
+.nav-btn:disabled {
+  color: var(--pagi-border);
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
-.showPages {
-  color: #aaa;
-  padding: 0 4px;
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  .pagination-container {
+    flex-direction: column-reverse;
+  }
+  
+  .page-link {
+    width: 34px;
+    height: 34px;
+    font-size: 0.85rem;
+  }
 }

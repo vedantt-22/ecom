@@ -1,84 +1,120 @@
-<div class="container">
-
-  <div class="loading-wrapper" *ngIf="isLoading">
-    <div class="spinner"></div>
+<div class="order-container">
+  <div class="state-view" *ngIf="isLoading">
+    <div class="skeleton-receipt"></div>
+    <p>Retrieving your order details...</p>
   </div>
 
-  <div class="alert alert-error" *ngIf="errorMsg && !isLoading">
-    {{ errorMsg }}
-    <a routerLink="/orders">Back to Orders</a>
+  <div class="state-view" *ngIf="errorMsg">
+    <div class="error-circle">!</div>
+    <h2>Oops!</h2>
+    <p>{{ errorMsg }}</p>
+    <button routerLink="/orders" class="btn-primary">Back to My Orders</button>
   </div>
 
-  <div *ngIf="order && !isLoading">
-    <div class="confirmation-banner" *ngIf="isConfirmation">
-      <div class="confirmation-icon">✓</div>
-      <div>
-        <h2>Order Placed Successfully!</h2>
-        <p>Thank you for your purchase. Your order is being processed.</p>
+  <main class="order-content fade-in" *ngIf="!isLoading && order">
+    
+    <header class="confirmation-header" *ngIf="isConfirmation">
+      <div class="check-animation">
+        <svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="25" fill="none"/><path fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
       </div>
-    </div>
+      <h1>Order Confirmed!</h1>
+      <p>Thank you for your purchase. We've sent a receipt to your email.</p>
+    </header>
 
-    <div class="order-header">
-      <div>
-        <h1 class="page-title">Order #{{ order.id }}</h1>
-        <p class="order-date">Placed on {{ order.createdAt | date:'mediumDate' }}</p>
-      </div>
-      <div class="order-status" [style.color]="getStatusColor(order.status)">
-        {{ order.status | titlecase }}
-      </div>
-    </div>
-
-    <div class="order-layout">
-      <div class="order-main">
-        <div class="order-items-card">
-          <h2>Items Ordered</h2>
-          <div class="order-item" *ngFor="let item of order.items">
-            <div class="item-image">
-              <img [src]="item.product?.imageUrl || '/images/placeholder.png'" [alt]="item.product?.name" (error)="item.product && (item.product.imageUrl = '/images/placeholder.png')">
+    <div class="order-grid">
+      
+      <section class="order-main">
+        <div class="glass-card tracking-card">
+          <div class="card-header">
+            <h3>Shipment Tracking</h3>
+            <span class="status-badge" [style.background-color]="getStatusColor(order.status)">
+              {{ order.status | titlecase }}
+            </span>
+          </div>
+          
+          <div class="status-timeline">
+            <div class="step" [class.active]="order.status === 'pending' || order.status === 'processing' || order.status === 'shipped' || order.status === 'delivered'">
+              <div class="node"></div><label>Ordered</label>
             </div>
-            <div class="item-info">
-              <h3>{{ item.product?.name || 'Product no longer available' }}</h3>
-              <p>Quantity: {{ item.quantity }}</p>
-              <p class="price-at-purchase">₹{{ item.priceAtPurchase | number:'1.2-2' }} each</p>
+            <div class="step" [class.active]="order.status === 'shipped' || order.status === 'delivered'">
+              <div class="node"></div><label>Shipped</label>
             </div>
-            <div class="item-line-total">
-              ₹{{ (item.priceAtPurchase * item.quantity) | number:'1.2-2' }}
+            <div class="step" [class.active]="order.status === 'delivered'">
+              <div class="node"></div><label>Delivered</label>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="order-sidebar">
-        
-        <div class="card shipping-card" *ngIf="order.shippingAddress">
-          <h2>Shipping Address</h2>
-          <div class="address-details">
-            <p><strong>{{ order.shippingAddress.fullName }}</strong></p>
-            <p>{{ order.shippingAddress.addressLine1 }}</p>
-            <p *ngIf="order.shippingAddress.addressLine2">{{ order.shippingAddress.addressLine2 }}</p>
-            <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.state }} - {{ order.shippingAddress.pincode }}</p>
-            <p>Phone: {{ order.shippingAddress.phone }}</p>
+        <div class="glass-card items-card">
+          <h3>Order Items</h3>
+          <div class="item-list">
+            <div class="order-item" *ngFor="let item of order.items">
+              <img [src]="item.product?.imageUrl || '/images/placeholder.png'" [alt]="item.product?.name || 'Product image'" class="item-thumb">
+              <div class="item-info">
+                <h4>{{ item.product?.name || 'Product no longer available' }}</h4>
+                <p>Qty: {{ item.quantity }}</p>
+              </div>
+              <div class="item-price">
+                {{ calculateLineTotal(item.priceAtPurchase, item.quantity) | currency }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="order-aside">
+        <div class="glass-card info-card">
+          <div class="info-group">
+            <label>Order Number</label>
+            <p>#ORD-{{ order.id }}</p>
+          </div>
+          <div class="info-group">
+            <label>Date Placed</label>
+            <p>{{ order.createdAt | date:'mediumDate' }}</p>
+          </div>
+          <div class="info-group">
+            <label>Payment Method</label>
+            <p>{{ formatPaymentMethod(order.paymentMethod) }}</p>
           </div>
         </div>
 
-        <div class="card summary-card">
-          <h2>Order Summary</h2>
-          <div class="detail-row">
-            <span>Payment Method</span>
-            <span>{{ formatPaymentMethod(order.paymentMethod) }}</span>
-          </div>
-          <div class="summary-divider"></div>
-          <div class="detail-row total-row">
-            <span>Total Amount</span>
-            <span>₹{{ order.totalAmount | number:'1.2-2' }}</span>
-          </div>
-          <div class="order-actions">
-            <a routerLink="/orders" class="btn btn-outline btn-block">Back to My Orders</a>
-            <a routerLink="/products" class="btn btn-primary btn-block">Continue Shopping</a>
-          </div>
+        <div class="glass-card address-card">
+          <h3>Shipping Address</h3>
+          <address *ngIf="order.shippingAddress as addr; else noAddress">
+            <strong>{{ addr.fullName }}</strong><br>
+            {{ addr.addressLine1 }}<br>
+            <span *ngIf="addr.addressLine2">{{ addr.addressLine2 }}<br></span>
+            {{ addr.city }}, {{ addr.state }} {{ addr.pincode }}<br>
+            <span class="phone">📞 {{ addr.phone }}</span>
+          </address>
+          <ng-template #noAddress>
+            <p>No shipping address available.</p>
+          </ng-template>
         </div>
 
-      </div>
+        <div class="summary-card">
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>{{ order.totalAmount | currency }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span>{{ 0 | currency }}</span>
+          </div>
+          <hr>
+          <div class="summary-row total">
+            <span>Grand Total</span>
+            <span>{{ order.totalAmount | currency }}</span>
+          </div>
+          <button class="btn-outline full-width" onclick="window.print()">
+            <span class="icon">🖨️</span> Print Invoice
+          </button>
+        </div>
+      </aside>
     </div>
-  </div>
+
+    <footer class="order-footer">
+      <button routerLink="/products" class="btn-text">← Continue Shopping</button>
+    </footer>
+  </main>
 </div>

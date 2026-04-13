@@ -1,32 +1,56 @@
-<div class="verify-container">
-    <div class="verify-card">
+<div class="verify-container dark-theme">
+  <div class="glow-sphere"></div>
+  
+  <main class="verify-card glass fade-in">
+    <header class="card-header">
+      <div class="status-icon" [class.verified]="codeShown">
+        <span class="icon">{{ codeShown ? '🔓' : '📩' }}</span>
+      </div>
+      <h1>Verify Access</h1>
+      <p class="subtitle">
+        We've sent a verification code to: <br>
+        <span class="email-tag">{{ email }}</span>
+      </p>
+    </header>
 
-        <div class="verify-header">
-            <h1>Check Your Code</h1>
-            <p>A reset code has been generated for {{ email }}</p>
+    <div class="verification-body">
+      <section class="code-placeholder" *ngIf="!codeShown">
+        <p>Click below to reveal your secure reset code.</p>
+        <button 
+          class="btn-primary" 
+          (click)="showCode()" 
+          [disabled]="isLoading"
+          [class.loading]="isLoading"
+        >
+          <span *ngIf="!isLoading">Reveal Code</span>
+          <div class="spinner" *ngIf="isLoading"></div>
+        </button>
+      </section>
+
+      <section class="code-reveal slide-up" *ngIf="codeShown">
+        <div class="code-display">
+          <span class="code-text">{{ code }}</span>
+          <div class="glow-bar"></div>
         </div>
+        
+        <p class="instruction">Keep this code secure. Ready to proceed?</p>
+        
+        <button class="btn-proceed" (click)="proceedToResest()">
+          Continue to Reset
+          <span class="arrow">→</span>
+        </button>
+      </section>
 
-        <div class="alert alert-error" *ngIf="errorMsg">{{ errorMsg }}</div>
-
-        <div *ngIf="!codeShown" class="code-message">
-            <p class="text-message">Please click the button below to view your reset code.</p>
-
-            <button class="btn btn-primary" (click)="showCode()" [disabled]="isLoading">
-
-            <span *ngIf="isLoading">Retrieving code...</span>
-            </button>
-        </div>
-
-        <div class="code-display" *ngIf="codeShown">
-            <p class="code-label">
-                Your reset code is: <span class="code">{{ code }}</span>
-            </p>
-
-            <button class="btn btn-primary" (click)="proceedToResest()">Continue to reset Code</button>
-        </div>
-
-        <div class="verify-forget">
-            Don't have an account? <a routerLink="/forget-password">Request a New Code</a>
-        </div>
+      <div class="error-banner shake" *ngIf="errorMsg">
+        <span class="err-icon">⚠️</span>
+        {{ errorMsg }}
+      </div>
     </div>
+
+    <footer class="card-footer">
+      <a routerLink="/forget-password" class="back-link">
+        Wait, I used the wrong email
+      </a>
+    </footer>
+  </main>
 </div>

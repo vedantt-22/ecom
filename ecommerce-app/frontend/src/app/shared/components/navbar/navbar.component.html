@@ -1,126 +1,71 @@
-<nav class="navbar">
-
-  <!-- ── Brand ──────────────────────────────────────────────── -->
-  <div class="nav-brand">
-    <a routerLink="/" (click)="closeMenu()">
-      <span class="brand-icon">🛒</span>
-      <span class="brand-name">ShopApp</span>
-    </a>
-  </div>
-
-  <!-- ── Desktop Navigation ─────────────────────────────────── -->
-  <div class="nav-links" [class.open]="menuOpen">
-
-    <!-- Public links — visible to everyone -->
-    <a routerLink="/"
-       routerLinkActive="active"
-       [routerLinkActiveOptions]="{ exact: true }"
-       (click)="closeMenu()">
-      Home
-    </a>
-
-    <a routerLink="/products"
-       routerLinkActive="active"
-       (click)="closeMenu()">
-      Products
-    </a>
-
-    <!-- ── Guest links ───────────────────────────────────────── -->
-    <ng-container *ngIf="isGuest">
-      <a routerLink="/login"
-         routerLinkActive="active"
-         class="nav-btn nav-btn-outline"
-         (click)="closeMenu()">
-        Login
-      </a>
-      <a routerLink="/register"
-         routerLinkActive="active"
-         class="nav-btn nav-btn-primary"
-         (click)="closeMenu()">
-        Register
-      </a>
-    </ng-container>
-
-    <!-- ── Customer links ────────────────────────────────────── -->
-    <ng-container *ngIf="isCustomer">
-
-      <!-- Cart with badge -->
-      <a routerLink="/cart"
-         routerLinkActive="active"
-         class="nav-cart"
-         (click)="closeMenu()">
-        <span class="cart-icon">🛒</span>
-        <span class="cart-label">Cart</span>
-        <span class="cart-badge" *ngIf="cartCount > 0">
-          {{ cartCount > 99 ? '99+' : cartCount }}
-        </span>
+<nav class="navbar-container" [class.menu-open]="menuOpen">
+  <div class="navbar-blur"></div>
+  
+  <div class="container">
+    <div class="navbar-main">
+      <a routerLink="/" class="brand" (click)="closeMenu()">
+        <div class="logo-hex">G</div>
+        <span class="brand-text">GEMINI<span class="accent">STORE</span></span>
       </a>
 
-      <a routerLink="/orders"
-         routerLinkActive="active"
-         (click)="closeMenu()">
-        Orders
-      </a>
+      <ul class="nav-links desktop-only">
+        <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a></li>
+        <li><a routerLink="/products" routerLinkActive="active">Shop</a></li>
+        <li *ngIf="isAdmin"><a routerLink="/admin" routerLinkActive="active" class="admin-badge">Admin Panel</a></li>
+      </ul>
 
-      <!-- User avatar dropdown -->
-      <div class="nav-user-menu" (clickOutside)="closeMenu()">
-        <a routerLink="/profile"
-           routerLinkActive="active"
-           class="nav-avatar"
-           title="{{ currentUser?.name }}"
-           (click)="closeMenu()">
-          <span class="avatar-circle">{{ userInitial }}</span>
-          <span class="avatar-name">{{ currentUser?.name }}</span>
+      <div class="nav-actions">
+        <a *ngIf="!isAdmin" routerLink="/cart" class="action-btn cart-trigger" routerLinkActive="active">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6zM3 6h18M16 10a4 4 0 01-8 0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
         </a>
+
+        <div class="auth-wrapper desktop-only">
+          <ng-container *ngIf="isGuest">
+            <a routerLink="/login" class="btn-ghost">Login</a>
+            <a routerLink="/register" class="btn-primary">Get Started</a>
+          </ng-container>
+
+          <div *ngIf="!isGuest" class="user-profile">
+            <div class="avatar">{{ userInitial }}</div>
+            <div class="user-dropdown glass">
+              <div class="dropdown-header">
+                <p class="name">{{ currentUser?.name }}</p>
+                <p class="role">{{ currentUser?.role }}</p>
+              </div>
+              <hr>
+              <button (click)="logout()" class="dropdown-item logout">
+                <span>Logout</span>
+                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button class="mobile-toggle" (click)="toggleMenu()" aria-label="Toggle navigation">
+          <div class="hamburger" [class.active]="menuOpen">
+            <span></span><span></span><span></span>
+          </div>
+        </button>
       </div>
-
-      <button class="nav-btn nav-btn-outline logout-btn" (click)="logout()">
-        Logout
-      </button>
-
-    </ng-container>
-
-    <!-- ── Admin links ───────────────────────────────────────── -->
-    <ng-container *ngIf="isAdmin">
-
-      <a routerLink="/admin"
-         routerLinkActive="active"
-         class="nav-btn nav-btn-admin"
-         (click)="closeMenu()">
-        Admin Panel
-      </a>
-
-      <!-- Admin avatar -->
-      <div class="nav-avatar admin-avatar">
-        <span class="avatar-circle admin-circle">{{ userInitial }}</span>
-        <span class="avatar-name">{{ currentUser?.name }}</span>
-      </div>
-
-      <button class="nav-btn nav-btn-outline logout-btn" (click)="logout()">
-        Logout
-      </button>
-
-    </ng-container>
-
+    </div>
   </div>
 
-  <!-- ── Mobile Hamburger ───────────────────────────────────── -->
-  <button
-    class="hamburger"
-    (click)="toggleMenu()"
-    [class.open]="menuOpen"
-    aria-label="Toggle navigation menu"
-  >
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-
+  <div class="mobile-menu" [class.show]="menuOpen">
+    <div class="mobile-links">
+      <a routerLink="/" routerLinkActive="active" (click)="closeMenu()">Home</a>
+      <a routerLink="/products" routerLinkActive="active" (click)="closeMenu()">Shop</a>
+      <a *ngIf="isAdmin" routerLink="/admin" routerLinkActive="active" (click)="closeMenu()">Admin</a>
+      
+      <div class="mobile-auth-footer">
+        <ng-container *ngIf="isGuest">
+          <button routerLink="/login" (click)="closeMenu()" class="btn-ghost full">Login</button>
+          <button routerLink="/register" (click)="closeMenu()" class="btn-primary full">Sign Up</button>
+        </ng-container>
+        <button *ngIf="!isGuest" (click)="logout()" class="btn-danger full">Logout</button>
+      </div>
+    </div>
+  </div>
 </nav>
-
-<!-- Overlay to close menu on mobile when clicking outside -->
-<div
-  class="menu-overlay"
-  *ngIf="menuOpen"
-  (click)="closeMenu()"
-></div>

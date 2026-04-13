@@ -1,183 +1,170 @@
-/* admin-products.component.css */
-.admin-page-header {
+/* --- Admin Dashboard Scoped Styles --- */
+
+:host {
+  --danger: #ff4d4d;
+  --drawer-bg: #12141c;
+  --card-glass: rgba(30, 32, 45, 0.6);
+  --transition-drawer: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* Header */
+.admin-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 3rem;
 }
 
-.form-card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
+.admin-header h1 { font-size: 2rem; margin-bottom: 0.25rem; }
+.subtitle { color: var(--text-dim); }
 
-.form-card h2 {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 1.2rem;
-  padding-bottom: 0.8rem;
-  border-bottom: 1px solid #eee;
-}
-
-.form-row {
+/* Product Grid */
+.product-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
 }
 
-.form-group {
+.product-card {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: var(--transition);
 }
 
-.form-group label {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #555;
+.product-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary);
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 0.6rem 0.8rem;
-  border: 1px solid #ddd;
+.card-image {
+  height: 200px;
+  position: relative;
+  background: #1a1c26;
+}
+
+.card-image img { width: 100%; height: 100%; object-fit: cover; }
+
+.category-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: white;
+}
+
+.card-body {
+  padding: 1.25rem;
+  flex-grow: 1;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.price { font-size: 1.25rem; font-weight: 800; color: var(--primary); }
+
+.stock-pill {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
   border-radius: 6px;
-  font-size: 0.9rem;
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #e94560;
+.stock-pill.low {
+  background: rgba(244, 63, 94, 0.1);
+  color: var(--danger);
 }
 
-.file-input { padding: 0.4rem 0; border: none; }
-
-.file-hint {
-  font-size: 0.78rem;
-  color: #888;
-  margin-top: 0.2rem;
+.card-actions {
+  display: flex;
+  padding: 1rem;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.02);
 }
 
-.input-error { border-color: #dc3545 !important; }
+/* Side Drawer Logic */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+}
+
+.drawer-overlay.open { opacity: 1; visibility: visible; }
+
+.side-drawer {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 100%;
+  max-width: 450px;
+  background: var(--drawer-bg);
+  padding: 2.5rem;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+  transform: translateX(100%);
+  transition: var(--transition-drawer);
+  overflow-y: auto;
+}
+
+.drawer-overlay.open .side-drawer { transform: translateX(0); }
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.close-btn {
+  background: none; border: none; font-size: 2rem; color: var(--text-dim); cursor: pointer;
+}
+
+/* Form Layout */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+.file-upload {
+  border: 2px dashed var(--glass-border);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.file-upload:hover { border-color: var(--primary); background: rgba(139, 92, 246, 0.05); }
 
 .form-actions {
   display: flex;
+  justify-content: flex-end;
   gap: 1rem;
-  margin-top: 0.5rem;
+  margin-top: 2rem;
 }
 
-/* ── Table ────────────────────────────────────────────────── */
-.table-card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  overflow: hidden;
+.btn-danger-outline {
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  background: transparent;
+  color: #fca5a5;
 }
 
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-}
+.btn-danger-outline:hover { background: var(--danger); color: white; }
 
-.admin-table th {
-  background: #f8f9fa;
-  padding: 0.8rem 1rem;
-  text-align: left;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #555;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid #eee;
-}
-
-.admin-table td {
-  padding: 0.8rem 1rem;
-  border-bottom: 1px solid #f5f5f5;
-  font-size: 0.9rem;
-  color: #333;
-  vertical-align: middle;
-}
-
-.admin-table tr:last-child td { border-bottom: none; }
-
-.admin-table tr:hover td { background: #fafafa; }
-
-.product-thumb {
-  width: 48px;
-  height: 48px;
-  border-radius: 6px;
-  object-fit: cover;
-}
-
-.product-name-cell {
-  font-weight: 500;
-  max-width: 200px;
-}
-
-.category-cell {
-  font-size: 0.82rem;
-  color: #888;
-}
-
-.stock-badge {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  background: #d4edda;
-  color: #155724;
-}
-
-.stock-badge.low { background: #fff3cd; color: #856404; }
-.stock-badge.out { background: #f8d7da; color: #721c24; }
-
-.action-btns {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-action {
-  padding: 0.3rem 0.7rem;
-  border-radius: 4px;
-  border: none;
-  font-size: 0.8rem;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.btn-action.edit {
-  background: #e8f4fd;
-  color: #185fa5;
-}
-
-.btn-action.edit:hover { background: #185fa5; color: white; }
-
-.btn-action.delete {
-  background: #fde8e8;
-  color: #a32d2d;
-}
-
-.btn-action.delete:hover { background: #a32d2d; color: white; }
-
-.empty-row {
-  text-align: center;
-  color: #888;
-  padding: 2rem !important;
-}
-
-.loading-wrapper {
-  display: flex;
-  justify-content: center;
-  padding: 3rem;
-}
+.btn-sm { padding: 0.5rem 1rem; font-size: 0.8rem; }

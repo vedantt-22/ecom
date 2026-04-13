@@ -1,56 +1,47 @@
-<!-- pagination.component.html -->
-<div class="pagination-container" *ngIf="totalPages > 1">
-
-  <p class="pagination-info">
-    Showing {{ startItem }}–{{ endItem }} of {{ total }} results
-  </p>
-
-  <div class="pagination-controls">
-
-    <button
-      class="page-btn"
-      (click)="goToPage(currentPage - 1)"
-      [disabled]="currentPage === 1"
-    >
-      &#8249;
-    </button>
-
-    <button
-      *ngIf="pages[0] > 1"
-      class="page-btn"
-      (click)="goToPage(1)"
-    >
-      1
-    </button>
-
-    <span *ngIf="pages[0] > 2" class="showPages">...</span>
-
-    <button
-      *ngFor="let page of pages"
-      class="page-btn"
-      [class.active]="page === currentPage"
-      (click)="goToPage(page)"
-    >
-      {{ page }}
-    </button>
-
-    <span *ngIf="pages[pages.length - 1] < totalPages - 1" class="showPages">...</span>
-
-    <button
-      *ngIf="pages[pages.length - 1] < totalPages"
-      class="page-btn"
-      (click)="goToPage(totalPages)"
-    >
-      {{ totalPages }}
-    </button>
-
-    <button
-      class="page-btn"
-      (click)="goToPage(currentPage + 1)"
-      [disabled]="currentPage === totalPages"
-    >
-      &#8250;
-    </button>
-
+<nav class="pagination-container" aria-label="Product navigation">
+  <div class="pagination-info">
+    <span class="text-muted">Showing</span>
+    <span class="text-highlight">{{ startItem }}</span>
+    <span class="text-muted">to</span>
+    <span class="text-highlight">{{ endItem }}</span>
+    <span class="text-muted">of</span>
+    <span class="text-highlight">{{ total }}</span>
+    <span class="text-muted">results</span>
   </div>
-</div>
+
+  <ul class="pagination-controls glass">
+    <li class="page-item">
+      <button 
+        class="nav-btn prev" 
+        (click)="goToPage(currentPage - 1)" 
+        [disabled]="currentPage === 1"
+        aria-label="Previous page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </li>
+
+    <li *ngFor="let page of pages" class="page-item">
+      <button 
+        class="page-link" 
+        [class.active]="page === currentPage"
+        (click)="goToPage(page)">
+        {{ page }}
+        <span class="active-indicator" *ngIf="page === currentPage"></span>
+      </button>
+    </li>
+
+    <li class="page-item">
+      <button 
+        class="nav-btn next" 
+        (click)="goToPage(currentPage + 1)" 
+        [disabled]="currentPage === totalPages"
+        aria-label="Next page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </li>
+  </ul>
+</nav>

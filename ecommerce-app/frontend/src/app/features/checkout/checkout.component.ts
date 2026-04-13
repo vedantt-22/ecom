@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { CartService } from '../../core/services/cart-service';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { OrderService } from '../../core/services/order-service';
 import { AddressService } from '../../core/services/address.service';
 import { Addressmodel, Cartmodel, CheckoutRequestmodel, CreateAddressRequestmodel } from '../../core/models';
 @Component({
   selector: 'app-checkout',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.css'
 })
@@ -144,6 +144,22 @@ export class CheckoutComponent {
       },
       error: (err) => {
         this.addressError = err.error?.error || err.message || 'Failed to add address.';
+      },
+    });
+  }
+
+  clearCart(): void {
+    if (!confirm('Are you sure you want to clear your cart?')) {
+      return;
+    }
+
+    this.cartService.clearCart().subscribe({
+      next: (cart) => {
+        this.cart = cart;
+        this.router.navigate(['/cart']);
+      },
+      error: () => {
+        this.errorMsg = 'Failed to clear cart. Please try again.';
       },
     });
   }

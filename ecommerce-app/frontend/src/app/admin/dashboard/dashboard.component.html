@@ -1,51 +1,69 @@
-<!-- dashboard.component.html -->
-<div class="admin-page">
-  <h1 class="admin-title">Dashboard</h1>
+<div class="dashboard-wrapper">
+  <header class="dashboard-header">
+    <div class="welcome-text">
+      <h1>Command Center</h1>
+      <p class="text-dim">Real-time platform overview and performance metrics.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="ngOnInit()" [disabled]="isLoading">
+        <span class="refresh-icon" [class.spinning]="isLoading">↻</span>
+        Sync Data
+      </button>
+    </div>
+  </header>
 
-  <div class="loading-wrapper" *ngIf="isLoading">
-    <div class="spinner"></div>
+  <div class="stats-grid" *ngIf="isLoading">
+    <div class="stat-card skeleton" *ngFor="let i of [1,2,3,4]"></div>
   </div>
 
-  <div *ngIf="stats && !isLoading">
+  <main class="stats-grid" *ngIf="!isLoading && stats">
+    
+    <section class="stat-card glass featured" routerLink="/admin/orders">
+      <div class="card-glow"></div>
+      <div class="card-content">
+        <header>
+          <span class="icon-box">💰</span>
+          <span class="label">Total Revenue</span>
+        </header>
+        <div class="value-group">
+          <h2 class="value text-gradient">{{ stats.totalRevenue | currency }}</h2>
+          <span class="trend positive">↑ 12% vs last month</span>
+        </div>
+      </div>
+    </section>
 
-    <!-- Stats grid -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <p class="stat-label">Total Customers</p>
-        <p class="stat-value">{{ stats.totalCustomers }}</p>
+    <section class="stat-card glass" routerLink="/admin/orders">
+      <div class="card-content">
+        <header>
+          <span class="icon-box">📦</span>
+          <span class="label">Total Orders</span>
+        </header>
+        <h2 class="value">{{ stats.totalOrders | number }}</h2>
+        <p class="footer-link">View all orders →</p>
       </div>
-      <div class="stat-card">
-        <p class="stat-label">Total Orders</p>
-        <p class="stat-value">{{ stats.totalOrders }}</p>
-      </div>
-      <div class="stat-card warn">
-        <p class="stat-label">Locked Accounts</p>
-        <p class="stat-value">{{ stats.lockedCustomers }}</p>
-      </div>
-      <div class="stat-card info">
-        <p class="stat-label">Active Sessions</p>
-        <p class="stat-value">{{ stats.activeSessions }}</p>
-      </div>
-    </div>
+    </section>
 
-    <!-- Quick nav -->
-    <div class="quick-nav">
-      <h2>Quick Access</h2>
-      <div class="quick-nav-grid">
-        <a routerLink="/admin/products"  class="quick-card">
-          <span class="quick-icon">📦</span>
-          <span>Manage Products</span>
-        </a>
-        <a routerLink="/admin/customers" class="quick-card">
-          <span class="quick-icon">👥</span>
-          <span>Manage Customers</span>
-        </a>
-        <a routerLink="/admin/orders"    class="quick-card">
-          <span class="quick-icon">🛒</span>
-          <span>View Orders</span>
-        </a>
+    <section class="stat-card glass" routerLink="/admin/products">
+      <div class="card-content">
+        <header>
+          <span class="icon-box">🏷️</span>
+          <span class="label">Active Products</span>
+        </header>
+        <h2 class="value">{{ stats.totalProducts | number }}</h2>
+        <p class="footer-link">Manage inventory →</p>
       </div>
-    </div>
+    </section>
 
-  </div>
+    <section class="stat-card glass" routerLink="/admin/users">
+      <div class="card-content">
+        <header>
+          <span class="icon-box">👥</span>
+          <span class="label">Total Customers</span>
+        </header>
+        <h2 class="value">{{ stats.totalUsers | number }}</h2>
+        <p class="footer-link">User directory →</p>
+      </div>
+    </section>
+
+  </main>
 </div>

@@ -1,72 +1,70 @@
-<!-- order-list.component.html -->
-<div class="container">
+<div class="order-list-container">
+  <header class="page-header">
+    <div class="header-content">
+      <h1>My Order History</h1>
+      <p class="subtitle" *ngIf="!isLoading && orders.length > 0">
+        You have <strong>{{ orders.length }}</strong> orders in your account.
+      </p>
+    </div>
+    <button routerLink="/products" class="btn-primary">Browse Products</button>
+  </header>
 
-  <h1 class="page-title">My Orders</h1>
-
-  <!-- Loading -->
-  <div class="loading-wrapper" *ngIf="isLoading">
-    <div class="spinner"></div>
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="skeleton-loader"></div>
+    <p>Fetching your purchase history...</p>
   </div>
 
-  <!-- Error -->
-  <div class="alert alert-error" *ngIf="errorMsg">{{ errorMsg }}</div>
+  <div class="error-card" *ngIf="errorMsg && !isLoading">
+    <span class="icon">⚠️</span>
+    <h3>Oops! Something went wrong</h3>
+    <p>{{ errorMsg }}</p>
+    <button (click)="ngOnInit()" class="btn-outline">Retry Loading</button>
+  </div>
 
-  <!-- Empty state -->
-  <div class="empty-state" *ngIf="!isLoading && orders.length === 0">
-    <div class="empty-icon">📦</div>
+  <div class="empty-state" *ngIf="!isLoading && orders.length === 0 && !errorMsg">
+    <div class="empty-illustration">📦</div>
     <h2>No orders yet</h2>
-    <p>You haven't placed any orders yet.</p>
-    <a routerLink="/products" class="btn btn-primary">Start Shopping</a>
+    <p>Your shopping bag is waiting to be filled!</p>
+    <button routerLink="/products" class="btn-primary">Start Shopping</button>
   </div>
 
-  <!-- Orders list -->
-  <div class="orders-list" *ngIf="!isLoading && orders.length > 0">
-
-    <div class="order-card" *ngFor="let order of orders">
-
-      <div class="order-card-header">
-        <div class="order-meta">
-          <span class="order-id">Order #{{ order.id }}</span>
-          <span class="order-date">{{ order.createdAt | date:'mediumDate' }}</span>
+  <div class="orders-grid" *ngIf="!isLoading && orders.length > 0">
+    <article class="order-card" *ngFor="let order of orders" [routerLink]="['/orders', order.id]">
+      <div class="card-glow"></div>
+      
+      <div class="card-header">
+        <div class="id-group">
+          <span class="label">Order ID</span>
+          <span class="value">#{{ order.id }}</span>
         </div>
-        <div class="order-status-badge"
-          [style.background]="getStatusColor(order.status) + '20'"
-          [style.color]="getStatusColor(order.status)"
-        >
+        <div class="status-badge" [style.background-color]="getStatusColor(order.status) + '15'" [style.color]="getStatusColor(order.status)">
+          <span class="dot" [style.background-color]="getStatusColor(order.status)"></span>
           {{ order.status | titlecase }}
         </div>
       </div>
 
-      <div class="order-card-items">
-        <div class="order-card-item"
-          *ngFor="let item of order.items.slice(0, 3)">
-          <img
-            *ngIf="item.product"
-            [src]="item.product.imageUrl"
-            [alt]="item.product?.name"
-            (error)="item.product.imageUrl = '/images/placeholder.png'"
-          />
-          <div class="deleted-thumb" *ngIf="!item.product">?</div>
+      <div class="card-body">
+        <div class="info-row">
+          <div class="info-item">
+            <span class="label">Placed On</span>
+            <span class="value">{{ order.createdAt | date:'mediumDate' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Items</span>
+            <span class="value">{{ order.items.length }} Items</span>
+          </div>
         </div>
-        <div class="more-items"
-          *ngIf="order.items.length > 3">
-          +{{ order.items.length - 3 }} more
+
+        <div class="payment-group">
+          <span class="method">{{ formatPaymentMethod(order.paymentMethod) }}</span>
+          <span class="amount">{{ order.totalAmount | currency }}</span>
         </div>
       </div>
 
-      <div class="order-card-footer">
-        <div class="order-summary">
-          <span>{{ order.items.length }} item{{ order.items.length !== 1 ? 's' : '' }}</span>
-          <span class="divider">·</span>
-          <span>{{ formatPaymentMethod(order.paymentMethod) }}</span>
-          <span class="divider">·</span>
-          <span class="order-total">₹{{ order.totalAmount | number:'1.2-2' }}</span>
-        </div>
-        <a [routerLink]="['/orders', order.id]" class="btn btn-outline btn-sm">
-          View Details
-        </a>
+      <div class="card-footer">
+        <span class="view-details">View Details</span>
+        <span class="arrow">→</span>
       </div>
-
-    </div>
+    </article>
   </div>
 </div>

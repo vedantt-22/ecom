@@ -8,7 +8,6 @@ import { takeUntil, switchMap, tap } from 'rxjs/operators';
 import { ProductService } from '../../../core/services/product-service';
 import { ProductCardComponent } from '../../../shared/components/product-card/product-card.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
-import { ProductTaxonomyPipe } from '../../../core/pipes/product-taxonomy.pipe';
 import { 
   ProductListItemmodel, 
   ProductTypemodel, 
@@ -24,8 +23,7 @@ import {
     FormsModule, 
     RouterModule, 
     ProductCardComponent, 
-    PaginationComponent, 
-    ProductTaxonomyPipe
+    PaginationComponent
   ],
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.css'],

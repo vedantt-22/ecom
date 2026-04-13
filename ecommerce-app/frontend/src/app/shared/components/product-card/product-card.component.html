@@ -1,47 +1,64 @@
-<!-- product-card.component.html -->
-<div class="product-card">
-  <a [routerLink]="['/product', product.id]" class="card-link">
-
-    <div class="card-image">
-      <img
-        [src]="product.imageUrl"
-        [alt]="product.name"
-        loading="lazy"
-        (error)="product.imageUrl = '/images/placeholder.png'"
-      />
-      <span class="out-of-stock-badge" *ngIf="product.stock === 0">
-        Out of stock
-      </span>
+<article class="product-card" [routerLink]="['/product', product.id]">
+  <div class="card-media">
+    <div class="badge-overlay" *ngIf="product.discountPercentage > 0">
+      <span class="discount-badge">-{{ product.discountPercentage }}%</span>
     </div>
 
-    <div class="card-body">
-      <div class="card-taxonomy">
-        {{ product.subCategory | productTaxonomy }}
+    <img
+      [src]="product.imageUrl || '/images/placeholder.png'"
+      [alt]="product.name"
+      class="product-image"
+      loading="lazy"
+      (error)="product.imageUrl = '/images/placeholder.png'"
+    />
+
+    <div class="media-overlay">
+      <span class="category-tag">{{ product.subCategory | productTaxonomy }}</span>
+    </div>
+  </div>
+
+  <div class="card-content">
+    <header class="content-header">
+      <h3 class="product-title" [title]="product.name">{{ product.name }}</h3>
+      <div class="rating">
+        <span class="star">★</span>
+        <span class="rating-value">{{ product.ratingsAverage || "4.5" }}</span>
       </div>
+    </header>
 
-      <h3 class="card-title">{{ product.name }}</h3>
+    <p class="product-description">
+      {{ product.description | slice: 0 : 60 }}...
+    </p>
 
-      <div class="card-footer">
-        <span class="card-price">
-          ₹{{ product.price | number:'1.2-2' }}
+    <footer class="content-footer">
+      <div class="price-stack">
+        <span class="current-price">{{ product.price | currency }}</span>
+        <span class="old-price" *ngIf="product.priceAfterDiscount">
+          {{ product.priceAfterDiscount | currency }}
         </span>
-        <ng-container *ngIf="authService.isCustomer">
-          <button
-            class="btn-add-cart"
-            (click)="addToCart($event)"
-            [disabled]="isAddingToCart || product.stock === 0"
-            [class.added]="addedToCart"
-          >
-            <span *ngIf="!isAddingToCart && !addedToCart">Add to cart</span>
-            <span *ngIf="isAddingToCart">Adding...</span>
-            <span *ngIf="addedToCart">Added!</span>
-          </button>
-        </ng-container>
-
       </div>
 
-      <p class="card-error" *ngIf="errorMsg">{{ errorMsg }}</p>
-    </div>
+      <button
+        class="add-to-cart-btn"
+        (click)="addToCart($event)"
+        [class.loading]="isAddingToCart"
+        [class.success]="addedToCart"
+        [disabled]="isAddingToCart"
+        aria-label="Add to cart"
+      >
+        <span class="btn-icon" *ngIf="!isAddingToCart && !addedToCart">🛒</span>
+        <span class="btn-text" *ngIf="!isAddingToCart && !addedToCart"
+          >Add</span
+        >
 
-  </a>
-</div>
+        <div class="loader" *ngIf="isAddingToCart"></div>
+
+        <span class="success-icon" *ngIf="addedToCart">✔</span>
+      </button>
+    </footer>
+
+    <div class="error-toast" *ngIf="errorMsg">
+      {{ errorMsg }}
+    </div>
+  </div>
+</article>

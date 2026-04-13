@@ -1,75 +1,151 @@
-/* dashboard.component.css */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.2rem;
-  margin-bottom: 2.5rem;
+/* --- Dashboard Layout --- */
+.dashboard-wrapper {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.stat-card {
-  background: white;
-  border-radius: 10px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  border-left: 4px solid #1a1a2e;
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
 }
 
-.stat-card.warn { border-left-color: #e94560; }
-.stat-card.info { border-left-color: #337ab7; }
-
-.stat-label {
-  font-size: 0.8rem;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.welcome-text h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   margin-bottom: 0.5rem;
 }
 
-.stat-value {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #1a1a2e;
-}
-
-.quick-nav h2 {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 1rem;
-}
-
-.quick-nav-grid {
+/* --- Bento Grid --- */
+.stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
 }
 
-.quick-card {
+/* Featured card takes more space on wide screens */
+@media (min-width: 1024px) {
+  .stat-card.featured {
+    grid-column: span 2;
+  }
+}
+
+/* --- Stat Card Design --- */
+.stat-card {
+  position: relative;
+  min-height: 200px;
+  border-radius: 24px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--primary);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.card-glow {
+  position: absolute;
+  top: 0; right: 0;
+  width: 150px; height: 150px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.stat-card:hover .card-glow {
+  opacity: 1;
+}
+
+/* --- Content Styling --- */
+.stat-card header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.8rem;
-  padding: 1.5rem;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  text-decoration: none;
-  color: #1a1a2e;
-  font-weight: 500;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-  border: 2px solid transparent;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.quick-card:hover {
-  border-color: #e94560;
-  transform: translateY(-2px);
-}
-
-.quick-icon { font-size: 1.8rem; }
-
-.loading-wrapper {
+.icon-box {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 4rem;
+  font-size: 1.5rem;
+}
+
+.label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0.5rem 0;
+}
+
+.featured .value {
+  font-size: 3.5rem;
+}
+
+.trend {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.footer-link {
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--primary);
+  font-weight: 600;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.stat-card:hover .footer-link {
+  opacity: 1;
+}
+
+/* --- Skeleton Animation --- */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-card) 25%,
+    rgba(255, 255, 255, 0.05) 50%,
+    var(--bg-card) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* --- Refresh Spin --- */
+.spinning {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

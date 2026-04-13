@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/services/auth-service';
 
 @Component({
   selector: 'app-verify-code',
+  standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './verify-code.component.html',
   styleUrl: './verify-code.component.css'
@@ -34,6 +35,11 @@ export class VerifyCodeComponent implements OnInit {
   }
 
   showCode(): void {
+    if (this.code) {
+      this.codeShown = true;
+      return;
+    }
+
     this.isLoading = true;
     this.errorMsg = '';
 

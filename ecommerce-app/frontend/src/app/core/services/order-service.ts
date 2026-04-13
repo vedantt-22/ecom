@@ -39,9 +39,17 @@ export class OrderService {
   } 
 
   getOrderById(id: number): Observable<Ordermodel> {
-  return this.http.get<{ data: Ordermodel }>(`${this.apiUrl}/orders/${id}`)
-    .pipe(map(res => res.data));
-}
+    return this.http
+      .get<{ data: Ordermodel } | Ordermodel>(`${this.apiUrl}/orders/${id}`)
+      .pipe(
+        map((res) => {
+          if (res && typeof res === 'object' && 'data' in res) {
+            return (res as { data: Ordermodel }).data;
+          }
+          return res as Ordermodel;
+        })
+      );
+  }
 
   getAllOrders(): Observable<Ordermodel[]> {
     return this.http.get<Ordermodel[]>(`${this.apiUrl}/orders/admin/all`);

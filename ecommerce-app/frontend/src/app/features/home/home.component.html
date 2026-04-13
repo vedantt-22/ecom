@@ -1,91 +1,135 @@
-<section class="home-wrapper dark-theme">
-  <div class="bg-gradient-glow top-right"></div>
-  <div class="bg-gradient-glow bottom-left"></div>
+<main class="home-layout" aria-label="Home page">
+  <div class="ambient-glow" aria-hidden="true"></div>
 
-  <header class="hero-section">
-    <div class="container">
-      <div class="hero-layout">
-        <div class="hero-content">
-          <div class="badge-container">
-            <span class="eyebrow-tag">Next-Gen Commerce</span>
+  <header class="hero-section container" aria-labelledby="hero-title">
+    <div class="hero-grid">
+      <article class="glass-panel hero-main-card">
+        <div class="badge-wrapper">
+          <span class="status-badge">Premium commerce experience</span>
+        </div>
+        
+        <h1 id="hero-title" class="display-text">
+          Shop Smarter With A <span class="gradient-text">Modern Dark Experience</span>
+        </h1>
+        
+        <p class="body-text-large">
+          Explore thousands of products across Electronics, Stationery, Furniture and more with a glass-inspired interface.
+        </p>
+
+        <form class="search-form-group" (submit)="$event.preventDefault(); onSearch()" role="search">
+          <div class="input-glass-container">
+            <label for="home-search" class="sr-only">Search for products</label>
+            <input
+              id="home-search"
+              type="text"
+              [(ngModel)]="searchTerm"
+              name="homeSearch"
+              placeholder="Search for products, tech, or furniture..."
+              class="glass-input"
+              autocomplete="off"
+            />
+            <button
+              type="submit"
+              class="primary-cta-btn"
+              [disabled]="!searchTerm.trim()">
+              <span>Search</span>
+              <svg viewBox="0 0 20 20" fill="currentColor" class="icon-sm"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
+            </button>
           </div>
-          <h1 class="hero-title">
-            Elevate your lifestyle with
-            <span class="gradient-text">premium curation</span>
-          </h1>
-          <p class="hero-description">
-            A minimalist approach to high-performance shopping. Explore our 
-            vetted collections with lightning-fast discovery.
-          </p>
+        </form>
 
-          <form class="glass-search" (submit)="$event.preventDefault(); onSearch()" role="search">
-            <div class="input-wrapper">
-              <svg class="icon-search" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <input
-                id="homeSearch"
-                type="text"
-                [(ngModel)]="searchTerm"
-                name="homeSearch"
-                (keyup.enter)="onSearch()"
-                placeholder="Search premium products..."
-                autocomplete="off"
-              />
-            </div>
-            <button type="submit" class="btn-primary-neon">Explore</button>
-          </form>
+        <div class="trust-pill-group">
+          <span class="trust-pill"><i class="dot"></i> Secure checkout</span>
+          <span class="trust-pill"><i class="dot"></i> Fast delivery</span>
+          <span class="trust-pill"><i class="dot"></i> Curated products</span>
+        </div>
+      </article>
 
-          <div class="hero-stats" aria-label="Store metrics">
-            <div class="stat-item">
-              <span class="stat-num">{{ taxonomy.length }}</span>
-              <span class="stat-label">Categories</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="stat-item">
-              <span class="stat-num">{{ featuredProducts.length }}</span>
-              <span class="stat-label">New Arrivals</span>
-            </div>
+      <aside class="glass-panel stats-card" aria-label="Store highlights">
+        <h2 class="panel-header-text">Live Snapshot</h2>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-label">Categories</span>
+            <span class="stat-value">{{ taxonomy.length }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Featured</span>
+            <span class="stat-value">{{ featuredProducts.length }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Support</span>
+            <span class="stat-value">24/7</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Payments</span>
+            <span class="stat-value">Secure</span>
           </div>
         </div>
-      </div>
+        <div class="stats-footer">
+          <p>Discover a cleaner shopping flow with premium visuals.</p>
+        </div>
+      </aside>
     </div>
   </header>
 
-  <section class="section container">
-    <div class="section-header">
-      <h2 class="section-title">Browse by Type</h2>
-      <a [routerLink]="['/products']" class="link-hover-effect">View All</a>
-    </div>
+  <section class="discovery-grid container">
+    <nav class="sidebar-nav glass-panel" aria-label="Category navigation">
+      <div class="section-title-area">
+        <h2 class="h3-text">Categories</h2>
+        <p class="caption-text">Quick navigation</p>
+      </div>
 
-    <div class="category-grid">
-      <a *ngFor="let type of taxonomy"
-         [routerLink]="['/products']"
-         [queryParams]="{ typeId: type.id }"
-         class="glass-card category-card">
-        <div class="category-icon">{{ type.name?.[0] }}</div>
-        <div class="category-meta">
-          <h3>{{ type.name }}</h3>
-          <span>{{ type.categories?.length || 0 }} Items</span>
-        </div>
-        <div class="arrow-icon">→</div>
-      </a>
-    </div>
-  </section>
+      <div class="category-stack">
+        <a *ngFor="let type of taxonomy"
+           [routerLink]="['/products']"
+           [queryParams]="{ typeId: type.id }"
+           class="nav-item-card">
+          <div class="nav-icon-box">{{ type.name?.[0] || '?' }}</div>
+          <div class="nav-content">
+            <span class="nav-title">{{ type.name }}</span>
+            <span class="nav-subtitle">{{ type.categories?.length || 0 }} sub-categories</span>
+          </div>
+        </a>
+      </div>
+    </nav>
 
-  <section class="section container">
-    <div class="section-header">
-      <h2 class="section-title">Latest Drops</h2>
-    </div>
+    <div class="main-feed-area glass-panel">
+      <div class="feed-header">
+        <h2 class="h3-text">Latest Products</h2>
+        <a routerLink="/products" class="text-link-btn">View all <span>&rarr;</span></a>
+      </div>
 
-    <div class="product-grid" *ngIf="isLoading">
-      <div class="skeleton-card" *ngFor="let i of [1,2,3,4]"></div>
-    </div>
+      <div class="products-flex-grid" *ngIf="isLoading">
+        <div class="skeleton-shimmer-card" *ngFor="let i of [1,2,3,4,5,6]"></div>
+      </div>
 
-    <div class="product-grid" *ngIf="!isLoading">
-      <div class="product-wrapper" *ngFor="let product of featuredProducts; let i = index" 
-           [style.animation-delay]="i * 0.1 + 's'">
-        <span class="taxonomy-pill">{{ product | productTaxonomy }}</span>
-        <app-product-card [product]="product" class="dark-card-style"></app-product-card>
+      <div class="products-flex-grid" *ngIf="!isLoading">
+        <article class="product-entry-wrapper" *ngFor="let product of featuredProducts">
+          <div class="taxonomy-chip">{{ product | productTaxonomy }}</div>
+          <app-product-card [product]="product" class="enhanced-card"></app-product-card>
+        </article>
+      </div>
+
+      <div class="empty-state-view" *ngIf="!isLoading && featuredProducts.length === 0">
+        <div class="empty-icon">📦</div>
+        <p>No products available yet.</p>
+        <a routerLink="/admin/products" class="action-btn-secondary">Add Products</a>
       </div>
     </div>
   </section>
-</section>
+
+  <section class="features-section container">
+    <div class="features-grid">
+      <div class="feature-card glass-panel" *ngFor="let prop of [
+        {i:'🚚', t:'Fast Delivery', p:'Quick shipping to your doorstep'},
+        {i:'🔒', t:'Secure Payments', p:'Multiple safe options'},
+        {i:'⭐', t:'Quality Items', p:'Curated selection'},
+        {i:'📞', t:'24/7 Support', p:'Always here for you'}
+      ]">
+        <div class="feature-icon-circle">{{prop.i}}</div>
+        <h3>{{prop.t}}</h3>
+        <p>{{prop.p}}</p>
+      </div>
+    </div>
+  </section>
+</main>

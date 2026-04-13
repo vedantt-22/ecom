@@ -1,47 +1,79 @@
-<div class="login-container">
-    <div class="login-card">
-        <div class="login-header">
-            <h1>Welcome Back</h1>
-            <p>Please login to your account</p>
+<div class="auth-container dark-theme">
+  <div class="bg-blur-circle"></div>
+  <div class="bg-blur-circle secondary"></div>
+
+  <main class="login-card glass">
+    <header class="card-header">
+      <div class="logo-wrapper">
+        <div class="logo-hex">G</div>
+      </div>
+      <h1>Welcome Back</h1>
+      <p>Enter your credentials to access your account</p>
+    </header>
+
+    <form [formGroup]="loginForm" (ngSubmit)="OnSubmit()" class="login-form">
+      
+      <div class="form-group" [class.error]="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+        <div class="input-wrapper">
+          <input 
+            id="email" 
+            type="email" 
+            formControlName="email" 
+            placeholder=" " 
+            autocomplete="email"
+          />
+          <label for="email">Email Address</label>
+          <span class="input-icon">✉️</span>
         </div>
-
-
-        <div class="alert alert-error" *ngIf="errorMsg">
-            {{ errorMsg }}
+        <div class="error-hint" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+          Please enter a valid email address
         </div>
+      </div>
 
-        <form [formGroup]="loginForm" (ngSubmit)="OnSubmit()">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input 
-                id="email"
-                type="email"
-                formControlName="email"
-                placeholder="Enter your email"
-                [class.error]="loginForm.get('email')?.touched && loginForm.get('email')?.invalid"
-                />
-                <span class="error-message" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.errors?.['required']">Email is required</span>
-                <span class="error-message" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
-            </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" formControlName="password" placeholder="Enter your password"
-                [class.error]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid"
-                />
-                <span class="error-message" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']">Password is required</span>
-                <span class="error-message" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
-            </div>
-            <div class="login-forget-password">
-                <a routerLink="/forget-password">Forget Password?</a>
-            </div>
-
-            <button type="submit" class="btn btn-primary" [disabled]="isLoading">Login</button>
-            <span *ngIf="isLoading">Logging in...</span>
-        </form>
-
-        <div class="login-register">
-            Don't have an account? <a routerLink="/register">Register here</a>
+      <div class="form-group" [class.error]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+        <div class="input-wrapper">
+          <input 
+            id="password" 
+            type="password" 
+            formControlName="password" 
+            placeholder=" " 
+            autocomplete="current-password"
+          />
+          <label for="password">Password</label>
+          <span class="input-icon">🔒</span>
         </div>
-    </div>
+        <div class="error-hint" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+          Password must be at least 6 characters
+        </div>
+      </div>
+
+      <div class="alert-banner" *ngIf="errorMsg">
+        <span class="alert-icon">⚠️</span>
+        <p>{{ errorMsg }}</p>
+      </div>
+
+      <div class="form-options">
+        <label class="remember-me">
+          <input type="checkbox"> <span>Keep me logged in</span>
+        </label>
+        <a routerLink="/forget-password" class="forgot-link">Forgot Password?</a>
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn-submit" 
+        [disabled]="isLoading"
+        [class.loading]="isLoading"
+      >
+        <span class="btn-text" *ngIf="!isLoading">Sign In</span>
+        <div class="loader-dots" *ngIf="isLoading">
+          <span></span><span></span><span></span>
+        </div>
+      </button>
+
+      <footer class="form-footer">
+        <p>Don't have an account? <a routerLink="/register">Create one for free</a></p>
+      </footer>
+    </form>
+  </main>
 </div>

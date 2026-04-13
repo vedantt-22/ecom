@@ -52,7 +52,7 @@ export class CartService {
 
   clearCart(): Observable<Cartmodel> {
     return this.http
-      .delete<Cartmodel>(`${this.apiUrl}/cart`)
+      .post<Cartmodel>(`${this.apiUrl}/cart/clear`, {})
       .pipe(tap((cart) => this.updateLocalState(cart)));
   }
 

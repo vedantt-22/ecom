@@ -1,110 +1,86 @@
-<div class="container detail-page-wrapper">
-
-  <div class="status-container" *ngIf="isLoading">
-    <div class="skeleton-loader"></div>
-    <p class="loading-text">Fetching product details...</p>
+<div class="page-container">
+  <div class="loader-container" *ngIf="isLoading">
+    <div class="glass-loader"></div>
+    <p>Loading Product Excellence...</p>
   </div>
 
-  <div class="alert alert-error" *ngIf="errorMsg && !isLoading">
-    <p>{{ errorMsg }}</p>
-    <a routerLink="/products" class="btn-outline">Back to Products</a>
+  <div class="error-container" *ngIf="errorMsg">
+    <div class="error-card">
+      <span>⚠️</span>
+      <p>{{ errorMsg }}</p>
+      <button routerLink="/products" class="btn-text">Back to Collection</button>
+    </div>
   </div>
 
-  <article class="product-detail" *ngIf="product && !isLoading">
-
-    <nav class="breadcrumb" aria-label="breadcrumb">
-      <a routerLink="/">Home</a>
-      <span class="sep">&rsaquo;</span>
-      <a routerLink="/products">Products</a>
-      <span class="sep">&rsaquo;</span>
-      
-      <ng-container *ngIf="product.subCategory as sub">
-        <a [routerLink]="['/products']" [queryParams]="{ typeId: sub.category?.type?.id }">
-          {{ sub.category?.type?.name }}
-        </a>
-        <span class="sep">&rsaquo;</span>
-        <a [routerLink]="['/products']" [queryParams]="{ categoryId: sub.category?.id }">
-          {{ sub.category?.name }}
-        </a>
-        <span class="sep">&rsaquo;</span>
-        <a [routerLink]="['/products']" [queryParams]="{ subCategoryId: sub.id }">
-          {{ sub.name }}
-        </a>
-      </ng-container>
-      
-      <span class="sep">&rsaquo;</span>
-      <span class="current">{{ product.name }}</span>
+  <main class="product-wrapper" *ngIf="!isLoading && product">
+    <nav class="breadcrumb">
+      <a routerLink="/products">Shop</a>
+      <span class="separator">/</span>
+      <span class="active">{{ product.name }}</span>
     </nav>
 
-    <div class="detail-layout">
-
-      <div class="detail-image-wrapper">
-        <img
-          [src]="product.imageUrl"
-          [alt]="product.name"
-          class="main-product-img"
-          (error)="product.imageUrl = '/images/placeholder.png'"
-        />
-      </div>
-
-      <section class="detail-info">
-        
-        <header>
-          <span class="taxonomy-tag">{{ product | productTaxonomy }}</span>
-          <h1 class="detail-title">{{ product.name }}</h1>
-          <div class="detail-price">₹{{ product.price | number:'1.2-2' }}</div>
-        </header>
-
-        <div class="stock-badge" [class.out-of-stock]="product.stock === 0">
-          <span class="dot"></span>
-          {{ product.stock > 0 ? 'In Stock (' + product.stock + ' available)' : 'Out of Stock' }}
+    <div class="detail-grid">
+      <section class="gallery-section">
+        <div class="image-stage">
+          <div class="badge-overlay" *ngIf="product.stock < 5 && product.stock > 0">Low Stock</div>
+          <div class="badge-overlay out-of-stock" *ngIf="product.stock === 0">Out of Stock</div>
+          <img [src]="product.imagePath" [alt]="product.name" class="main-image">
         </div>
+      </section>
+
+      <section class="info-section">
+        <header class="product-header">
+          <div class="category-tag">{{ product | productTaxonomy }}</div>
+          <h1 class="product-title">{{ product.name }}</h1>
+          <div class="price-row">
+            <span class="current-price">{{ product.price | currency }}</span>
+            <span class="stock-indicator" [class.low]="product.stock < 5">
+              {{ product.stock > 0 ? product.stock + ' in stock' : 'Unavailable' }}
+            </span>
+          </div>
+        </header>
 
         <div class="description-box">
           <h3>Description</h3>
           <p>{{ product.description }}</p>
         </div>
 
-        <hr class="divider">
-
-        <div class="action-area" *ngIf="authService.currentUser$ | async as user">
-          <ng-container *ngIf="user.role === 'customer'">
-            
-            <div class="purchase-controls" *ngIf="product.stock > 0">
-              <div class="quantity-picker">
-                <button type="button" (click)="decreaseQuantity()" [disabled]="quantity === 1">−</button>
-                <span class="qty-display">{{ quantity }}</span>
-                <button type="button" (click)="increaseQuantity()" [disabled]="quantity >= product.stock">+</button>
-              </div>
-
-              <button
-                class="btn-primary btn-add-cart"
-                (click)="addToCart()"
-                [disabled]="isAddingToCart || product.stock === 0"
-              >
-                <span *ngIf="!isAddingToCart && !addedToCart">Add to Cart</span>
-                <span *ngIf="isAddingToCart">Adding...</span>
-                <span *ngIf="addedToCart">✓ Added!</span>
-              </button>
+        <div class="purchase-zone" *ngIf="product.stock > 0">
+          <div class="control-row">
+            <div class="quantity-selector">
+              <button (click)="decreaseQuantity()" [disabled]="quantity <= 1">−</button>
+              <input type="number" [(ngModel)]="quantity" readonly>
+              <button (click)="increaseQuantity()" [disabled]="quantity >= product.stock">+</button>
             </div>
+            
+            <button class="btn-share" (click)="shareProduct()" [title]="shareMsg || 'Share product'">
+              <span class="icon">🔗</span>
+              <span class="share-tooltip" *ngIf="shareMsg">{{ shareMsg }}</span>
+            </button>
+          </div>
 
-            <p class="feedback-msg error" *ngIf="cartErrorMsg">{{ cartErrorMsg }}</p>
-          </ng-container>
+          <div class="action-row">
+            <button 
+              class="btn-cart" 
+              (click)="addToCart()" 
+              [disabled]="isAddingToCart || addedToCart"
+              [class.loading]="isAddingToCart"
+              [class.success]="addedToCart">
+              
+              <span class="btn-content" *ngIf="!isAddingToCart && !addedToCart">Add to Cart</span>
+              <span class="btn-content" *ngIf="isAddingToCart">Processing...</span>
+              <span class="btn-content" *ngIf="addedToCart">✓ Added!</span>
+              
+              <div class="progress-bar" *ngIf="isAddingToCart"></div>
+            </button>
+          </div>
+          
+          <p class="auth-error" *ngIf="cartErrorMsg">
+            {{ cartErrorMsg }} 
+            <a *ngIf="!authService.isLoggedIn" routerLink="/login">Login here</a>
+          </p>
         </div>
-
-        <div class="login-prompt" *ngIf="!(authService.currentUser$ | async)">
-          <p>Please log in to purchase this item.</p>
-          <a routerLink="/login" class="btn-primary">Login to Buy</a>
-        </div>
-
-        <footer class="detail-footer">
-          <button class="btn-share" (click)="shareProduct()" title="Copy link to clipboard">
-            <span class="icon">&#128279;</span> Share this product
-          </button>
-            <span class="share-toast" *ngIf="shareMsg">{{ shareMsg }}</span>
-        </footer>
-
       </section>
     </div>
-  </article>
+  </main>
 </div>
