@@ -5,7 +5,7 @@
     <div class="navbar-main">
       <a routerLink="/" class="brand" (click)="closeMenu()">
         <div class="logo-hex">G</div>
-        <span class="brand-text">GEMINI<span class="accent">STORE</span></span>
+        <span class="brand-text">PRODUCTMART</span>
       </a>
 
       <ul class="nav-links desktop-only">
@@ -25,7 +25,7 @@
         <div class="auth-wrapper desktop-only">
           <ng-container *ngIf="isGuest">
             <a routerLink="/login" class="btn-ghost">Login</a>
-            <a routerLink="/register" class="btn-primary">Get Started</a>
+            <a routerLink="/register" class="btn-ghost">Register</a>
           </ng-container>
 
           <div *ngIf="!isGuest" class="user-profile">
