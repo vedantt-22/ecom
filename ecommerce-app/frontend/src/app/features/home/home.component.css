@@ -41,7 +41,7 @@
   background: var(--bg-deep);
   color: var(--text-primary);
   min-height: 100vh;
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: var(--text-body);
   line-height: 1.5;
   padding-bottom: var(--space-xl);

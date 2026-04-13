@@ -12,7 +12,7 @@
   display: block;
   min-height: 100vh;
   background-color: var(--bg-app);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Poppins', system-ui, sans-serif;
   color: white
 }
 
@@ -94,12 +94,13 @@
 .card-header {
   margin-bottom: 2rem;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
 }
 
-.card-header h3 { margin: 0; font-size: 1.25rem; }
-.card-header p { color: var(--text-muted); margin-top: 0.25rem; }
+.card-header h3 { margin: 0; font-size: 20px; }
+.card-header p { color: var(--text-muted); margin-top: 18px; }
 
 /* Forms */
 .grid-form {
@@ -115,7 +116,7 @@
   font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 0.5rem;
-  color: var(--text-main);
+  color: var(--text-muted);
 }
 
 .form-group input {

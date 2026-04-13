@@ -17,7 +17,7 @@
   display: grid;
   place-items: center;
   background-color: var(--bg-dark);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Poppins', system-ui, sans-serif;
   color: var(--text-main);
   padding: 1rem;
   position: relative;

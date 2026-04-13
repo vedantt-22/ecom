@@ -20,7 +20,7 @@
   background-color: var(--bg-dark);
   position: relative;
   overflow: hidden;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
   padding: 20px;
 }
 

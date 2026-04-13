@@ -19,6 +19,18 @@ export class ProductCardComponent {
 
   constructor(private cartService: CartService, public authService: AuthService, private router: Router) {}
 
+
+  fallbackImage = '/ProductImages/placeholder.png';
+
+onImageError(event: Event) {
+  const img = event.target as HTMLImageElement;
+
+  // Prevent infinite loop
+  if (img.src.includes(this.fallbackImage)) return;
+
+  img.src = this.fallbackImage;
+}
+
   addToCart(event: Event): void {
     event.stopPropagation();
     event.preventDefault();

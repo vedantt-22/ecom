@@ -2,7 +2,7 @@
    DESIGN TOKENS
 ================================ */
 :host {
-  --bg-main: #0b0f17;
+  --bg-deep: #0a0a0c;
   --bg-soft: rgba(255,255,255,0.04);
   --bg-card: rgba(255,255,255,0.06);
 
@@ -31,6 +31,8 @@
   margin: 0 auto;
   padding: var(--space-md) var(--space-sm) var(--space-lg);
   color: var(--text-primary);
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg-deep);
 }
 
 /* ================================
@@ -50,7 +52,7 @@
   gap: 0.5rem;
   padding: 0.5rem;
   border-radius: var(--radius-lg);
-  background: var(--bg-soft);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   backdrop-filter: blur(10px);
   transition: var(--transition);
@@ -113,7 +115,7 @@
 }
 
 .sort-controls select {
-  background: var(--bg-soft);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   color: var(--text-primary);
   padding: 0.5rem;

@@ -75,10 +75,19 @@
   gap: 1.5rem;
 }
 
+.auth-wrapper {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 20px;
+  font-weight: 300;
+  transition: var(--transition);
+  position: relative;
+}
+
 .nav-links a {
   text-decoration: none;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: 26px;
   font-weight: 500;
   transition: var(--transition);
   position: relative;
@@ -143,33 +152,67 @@
   font-weight: 700; font-size: 0.9rem;
   box-shadow: 0 0 15px var(--accent-glow);
 }
-
 .user-dropdown {
   position: absolute;
-  top: 150%; right: 0;
-  width: 200px;
-  padding: 1rem;
-  border-radius: 16px;
-  opacity: 0; visibility: hidden;
-  transform: translateY(10px);
+  top: 120%; 
+  right: 0;
+
+  width: 80px;              /* reduced from 100px */
+  padding: 0.5rem;         /* reduced padding */
+  border-radius: 10px;     /* slightly tighter */
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px); /* smaller motion */
+
   transition: var(--transition);
   border: 1px solid var(--glass-border);
 }
 
-.user-profile:hover .user-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
-
-.dropdown-header { margin-bottom: 0.5rem; }
-.dropdown-header .name { font-weight: 600; font-size: 0.9rem; }
-.dropdown-header .role { font-size: 0.75rem; color: var(--text-muted); text-transform: capitalize; }
-
-.dropdown-item {
-  width: 100%; display: flex; align-items: center; justify-content: space-between;
-  padding: 0.5rem 0; background: none; border: none;
-  color: var(--text-muted); cursor: pointer; transition: 0.2s;
+/* Show dropdown */
+.user-profile:hover .user-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
-.dropdown-item.logout:hover { color: #f43f5e; }
+/* Header */
+.dropdown-header {
+  margin-bottom: 0.3rem;   /* reduced spacing */
+}
 
+.dropdown-header .name {
+  font-weight: 600;
+  font-size: 0.75rem;      /* smaller text */
+}
+
+.dropdown-header .role {
+  font-size: 0.65rem;      /* smaller text */
+  color: var(--text-muted);
+  text-transform: capitalize;
+}
+
+/* Items */
+.dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0.3rem 0;       /* tighter spacing */
+  font-size: 0.7rem;       /* smaller text */
+
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* Hover */
+.dropdown-item.logout:hover {
+  color: #f43f5e;
+}
 /* Buttons */
 .btn-primary {
   background: var(--primary-accent);

@@ -99,6 +99,9 @@ formatPaymentMethod(method: Ordermodel['paymentMethod'] | undefined | string): s
     return price * qty;
   }
 
+  printInvoice() {
+  window.print();
+}
   ngOnDestroy(): void {
     if (this.sub) {
       this.sub.unsubscribe();
