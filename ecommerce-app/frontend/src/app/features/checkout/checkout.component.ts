@@ -119,6 +119,7 @@ export class CheckoutComponent {
   addNewAddress(): void {
     if (this.newAddressForm.invalid) {
       this.newAddressForm.markAllAsTouched();
+      this.addressError = 'Please fill in all required fields with valid data.';
       return;
     }
 
@@ -126,8 +127,12 @@ export class CheckoutComponent {
     this.addressMsg = '';
 
     const payload = this.newAddressForm.value as CreateAddressRequestmodel;
+    
+    console.log('Sending address payload:', payload);
+
     this.addressService.createAddress(payload).subscribe({
       next: (address) => {
+        console.log('Address created successfully:', address);
         this.addressMsg = 'Address added. Selected for this order.';
         this.newAddressForm.reset({
           label: 'Home',
@@ -143,7 +148,8 @@ export class CheckoutComponent {
         this.loadAddresses(address.id);
       },
       error: (err) => {
-        this.addressError = err.error?.error || err.message || 'Failed to add address.';
+        console.error('Address creation error:', err);
+        this.addressError = err.error?.error || err.error?.message || err.message || 'Failed to add address.';
       },
     });
   }

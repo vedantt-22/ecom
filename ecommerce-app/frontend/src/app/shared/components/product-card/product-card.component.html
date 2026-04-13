@@ -43,7 +43,9 @@
         (click)="addToCart($event)"
         [class.loading]="isAddingToCart"
         [class.success]="addedToCart"
-        [disabled]="isAddingToCart"
+        [class.disabled]="isAddingToCart || !authService.isLoggedIn || !authService.isCustomer"
+        [disabled]="isAddingToCart || !authService.isLoggedIn || !authService.isCustomer"
+        [title]="!authService.isLoggedIn ? 'Please log in to add to cart' : !authService.isCustomer ? 'Admin accounts cannot purchase' : 'Add to cart'"
         aria-label="Add to cart">
         <span class="btn-icon" *ngIf="!isAddingToCart && !addedToCart">🛒</span>
         <span class="btn-text" *ngIf="!isAddingToCart && !addedToCart">Add</span>

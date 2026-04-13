@@ -45,23 +45,63 @@
             <div class="input-row">
               <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" formControlName="fullName" placeholder="John Doe">
+                <input 
+                  type="text" 
+                  formControlName="fullName" 
+                  placeholder="John Doe"
+                  [class.error]="newAddressForm.get('fullName')?.invalid && newAddressForm.get('fullName')?.touched">
+                <small class="error-hint" *ngIf="newAddressForm.get('fullName')?.hasError('required') && newAddressForm.get('fullName')?.touched">Full name is required</small>
+                <small class="error-hint" *ngIf="newAddressForm.get('fullName')?.hasError('minlength') && newAddressForm.get('fullName')?.touched">Minimum 2 characters</small>
               </div>
               <div class="form-group">
                 <label>Phone Number</label>
-                <input type="text" formControlName="phone" placeholder="10-digit mobile">
+                <input 
+                  type="text" 
+                  formControlName="phone" 
+                  placeholder="10-digit mobile"
+                  [class.error]="newAddressForm.get('phone')?.invalid && newAddressForm.get('phone')?.touched">
+                <small class="error-hint" *ngIf="newAddressForm.get('phone')?.hasError('required') && newAddressForm.get('phone')?.touched">Phone is required</small>
+                <small class="error-hint" *ngIf="newAddressForm.get('phone')?.hasError('pattern') && newAddressForm.get('phone')?.touched">Must be 10 digits</small>
               </div>
             </div>
             <div class="form-group">
               <label>Address Line 1</label>
-              <input type="text" formControlName="addressLine1" placeholder="Street, house no.">
+              <input 
+                type="text" 
+                formControlName="addressLine1" 
+                placeholder="Street, house no."
+                [class.error]="newAddressForm.get('addressLine1')?.invalid && newAddressForm.get('addressLine1')?.touched">
+              <small class="error-hint" *ngIf="newAddressForm.get('addressLine1')?.hasError('required') && newAddressForm.get('addressLine1')?.touched">Address is required</small>
+              <small class="error-hint" *ngIf="newAddressForm.get('addressLine1')?.hasError('minlength') && newAddressForm.get('addressLine1')?.touched">Minimum 5 characters</small>
             </div>
             <div class="input-row triplet">
-              <div class="form-group"><label>City</label><input type="text" formControlName="city"></div>
-              <div class="form-group"><label>State</label><input type="text" formControlName="state"></div>
-              <div class="form-group"><label>Pincode</label><input type="text" formControlName="pincode"></div>
+              <div class="form-group">
+                <label>City</label>
+                <input 
+                  type="text" 
+                  formControlName="city"
+                  [class.error]="newAddressForm.get('city')?.invalid && newAddressForm.get('city')?.touched">
+                <small class="error-hint" *ngIf="newAddressForm.get('city')?.invalid && newAddressForm.get('city')?.touched">City is required</small>
+              </div>
+              <div class="form-group">
+                <label>State</label>
+                <input 
+                  type="text" 
+                  formControlName="state"
+                  [class.error]="newAddressForm.get('state')?.invalid && newAddressForm.get('state')?.touched">
+                <small class="error-hint" *ngIf="newAddressForm.get('state')?.invalid && newAddressForm.get('state')?.touched">State is required</small>
+              </div>
+              <div class="form-group">
+                <label>Pincode</label>
+                <input 
+                  type="text" 
+                  formControlName="pincode"
+                  [class.error]="newAddressForm.get('pincode')?.invalid && newAddressForm.get('pincode')?.touched">
+                <small class="error-hint" *ngIf="newAddressForm.get('pincode')?.hasError('required') && newAddressForm.get('pincode')?.touched">Pincode is required</small>
+                <small class="error-hint" *ngIf="newAddressForm.get('pincode')?.hasError('pattern') && newAddressForm.get('pincode')?.touched">Must be 6 digits</small>
+              </div>
             </div>
-            <button type="button" class="btn-secondary" (click)="addNewAddress()">Save & Use Address</button>
+            <button type="button" class="btn-secondary" (click)="addNewAddress()" [disabled]="newAddressForm.invalid">Save & Use Address</button>
             <p class="error-text" *ngIf="addressError">{{ addressError }}</p>
             <p class="success-text" *ngIf="addressMsg">{{ addressMsg }}</p>
           </div>

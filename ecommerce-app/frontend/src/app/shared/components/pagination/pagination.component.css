@@ -37,13 +37,18 @@
   list-style: none;
   display: flex;
   align-items: center;
-  padding: 0.5rem;
-  background: var(--pagi-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: 0.75rem;
+  background: rgba(9, 12, 22, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--pagi-border);
-  border-radius: 100px; /* Pill shape */
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.pagination-controls.glass {
+  background: rgba(30, 32, 45, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .page-item {

@@ -1,50 +1,80 @@
-<div class="cart-page dark-theme">
-  <div class="glow-spot bg-primary"></div>
-  <div class="glow-spot bg-secondary"></div>
+<section class="cart-page dark-theme" aria-label="Shopping Cart">
+
+  <div class="glow-spot bg-primary" aria-hidden="true"></div>
+  <div class="glow-spot bg-secondary" aria-hidden="true"></div>
 
   <div class="container">
+
+    <!-- Header -->
     <header class="cart-header">
-      <h1 class="page-title">Your Digital Bag <span>[{{ cart?.items?.length || 0 }} items]</span></h1>
-      <button class="btn-clear" *ngIf="cart?.items?.length" (click)="clearCart()">
-        <span class="icon">🗑️</span> Clear Cart
+      <div class="header-text">
+        <h1 class="page-title">
+          Your Cart
+          <span>[{{ cart?.items?.length || 0 }} items]</span>
+        </h1>
+      </div>
+
+      <button 
+        class="btn-clear"
+        *ngIf="cart?.items?.length"
+        (click)="clearCart()">
+        🗑️ Clear
       </button>
     </header>
 
-    <div class="state-container" *ngIf="isLoading">
+    <!-- Loading -->
+    <section class="state-container" *ngIf="isLoading" aria-live="polite">
       <div class="loading-spinner"></div>
-      <p>Syncing your selection...</p>
-    </div>
+      <p>Updating your cart...</p>
+    </section>
 
+    <!-- Error -->
     <div class="error-banner" *ngIf="errorMsg">
       <p>{{ errorMsg }}</p>
     </div>
 
-    <div class="empty-state card glass" *ngIf="!isLoading && (!cart || cart.items.length === 0)">
+    <!-- Empty -->
+    <section class="empty-state card glass" *ngIf="!isLoading && (!cart || cart.items.length === 0)">
       <div class="empty-icon">🛒</div>
-      <h2>Your cart is currently empty.</h2>
-      <p>Looks like you haven't added anything yet.</p>
-      <button routerLink="/products" class="btn-primary mt-2">Start Shopping</button>
-    </div>
+      <h2>Your cart is empty</h2>
+      <p>Add items to continue shopping</p>
+      <button routerLink="/products" class="btn-primary mt-2">Browse Products</button>
+    </section>
 
+    <!-- Cart Layout -->
     <div class="cart-layout" *ngIf="!isLoading && cart && cart.items.length > 0">
-      
+
+      <!-- Items -->
       <section class="cart-items">
-        <div class="cart-card glass" *ngFor="let item of cart.items" [class.processing]="updatedItemId === item.id">
+
+        <article 
+          class="cart-card glass"
+          *ngFor="let item of cart.items"
+          [class.processing]="updatedItemId === item.id"
+        >
+
           <div class="item-visual">
             <img [src]="item.product.imageUrl" [alt]="item.product.name">
           </div>
-          
+
           <div class="item-details">
             <h3 class="item-name">{{ item.product.name }}</h3>
-            <p class="item-meta">Unit Price: {{ item.lineTotal | currency }}</p>
-            
+            <p class="item-meta">₹ {{ item.lineTotal }}</p>
+
             <div class="item-actions">
+
               <div class="qty-control">
                 <button (click)="updateQuantity(item.id, item.quantity - 1)" [disabled]="item.quantity <= 1">−</button>
                 <span class="qty-display">{{ item.quantity }}</span>
                 <button (click)="updateQuantity(item.id, item.quantity + 1)">+</button>
               </div>
-              <button class="btn-remove" (click)="removeItem(item.id)" title="Remove Item">Remove</button>
+
+              <button 
+                class="btn-remove"
+                (click)="removeItem(item.id)">
+                Remove
+              </button>
+
             </div>
           </div>
 
@@ -55,37 +85,47 @@
           <div class="item-loader" *ngIf="updatedItemId === item.id">
             <div class="mini-spinner"></div>
           </div>
-        </div>
+
+        </article>
+
       </section>
 
+      <!-- Summary -->
       <aside class="cart-summary">
         <div class="summary-card glass sticky">
-          <h3>Order Summary</h3>
+
+          <h3>Summary</h3>
+
           <div class="summary-row">
             <span>Subtotal</span>
             <span>{{ cart.total | currency }}</span>
           </div>
+
           <div class="summary-row">
             <span>Shipping</span>
             <span class="text-success">Free</span>
           </div>
+
           <div class="divider"></div>
+
           <div class="summary-row total">
             <span>Total</span>
             <span class="total-amount">{{ cart.total | currency }}</span>
           </div>
-          
+
           <button routerLink="/checkout" class="btn-primary full-width mt-2">
-            Proceed to Checkout
+            Checkout
           </button>
-          
+
           <div class="trust-badges">
-            <span>🔒 Secure Checkout</span>
-            <span>💳 All Major Cards</span>
+            <span>🔒 Secure</span>
+            <span>💳 Cards</span>
           </div>
+
         </div>
       </aside>
 
     </div>
+
   </div>
-</div>
+</section>

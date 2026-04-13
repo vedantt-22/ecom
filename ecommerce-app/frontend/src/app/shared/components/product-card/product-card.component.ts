@@ -20,9 +20,22 @@ export class ProductCardComponent {
   constructor(private cartService: CartService, public authService: AuthService, private router: Router) {}
 
   addToCart(event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
 
-    event.stopPropagation(); // Prevent card click navigation
-    event.preventDefault(); // Prevent default button behavior
+    // Check if user is authenticated
+    if (!this.authService.isLoggedIn) {
+      this.errorMsg = 'Please log in to add items to cart.';
+      setTimeout(() => this.errorMsg = '', 3000);
+      return;
+    }
+
+    // Check if user is a customer
+    if (!this.authService.isCustomer) {
+      this.errorMsg = 'Only customers can add items to cart. Admin accounts cannot purchase.';
+      setTimeout(() => this.errorMsg = '', 3000);
+      return;
+    }
 
     if(this.isAddingToCart) return;
     this.isAddingToCart = true;
@@ -37,8 +50,10 @@ export class ProductCardComponent {
       error: (err) => {
         this.isAddingToCart = false;
         this.errorMsg = 'Failed to add item to cart.';
+        if (err.status === 403) {
+          this.errorMsg = 'You do not have permission to add items to cart.';
+        }
         setTimeout(() => this.errorMsg = '', 3000);
-
       }
   });
 }

@@ -1,57 +1,83 @@
-<div class="order-list-container">
+<section class="order-list-container" aria-label="Order History">
+
+  <!-- Header -->
   <header class="page-header">
     <div class="header-content">
-      <h1>My Order History</h1>
+      <h1>My Orders</h1>
       <p class="subtitle" *ngIf="!isLoading && orders.length > 0">
-        You have <strong>{{ orders.length }}</strong> orders in your account.
+        <strong>{{ orders.length }}</strong> orders across your account
       </p>
     </div>
-    <button routerLink="/products" class="btn-primary">Browse Products</button>
+
+    <button routerLink="/products" class="btn-primary">
+      Browse Products
+    </button>
   </header>
 
-  <div class="loading-state" *ngIf="isLoading">
+  <!-- Loading -->
+  <section class="loading-state" *ngIf="isLoading" aria-live="polite">
     <div class="skeleton-loader"></div>
-    <p>Fetching your purchase history...</p>
-  </div>
+    <p>Fetching your orders...</p>
+  </section>
 
-  <div class="error-card" *ngIf="errorMsg && !isLoading">
+  <!-- Error -->
+  <section class="error-card" *ngIf="errorMsg && !isLoading">
     <span class="icon">⚠️</span>
-    <h3>Oops! Something went wrong</h3>
+    <h3>Something went wrong</h3>
     <p>{{ errorMsg }}</p>
-    <button (click)="ngOnInit()" class="btn-outline">Retry Loading</button>
-  </div>
+    <button (click)="ngOnInit()" class="btn-outline">Retry</button>
+  </section>
 
-  <div class="empty-state" *ngIf="!isLoading && orders.length === 0 && !errorMsg">
+  <!-- Empty -->
+  <section class="empty-state" *ngIf="!isLoading && orders.length === 0 && !errorMsg">
     <div class="empty-illustration">📦</div>
     <h2>No orders yet</h2>
-    <p>Your shopping bag is waiting to be filled!</p>
+    <p>Start exploring and place your first order.</p>
     <button routerLink="/products" class="btn-primary">Start Shopping</button>
-  </div>
+  </section>
 
-  <div class="orders-grid" *ngIf="!isLoading && orders.length > 0">
-    <article class="order-card" *ngFor="let order of orders" [routerLink]="['/orders', order.id]">
+  <!-- Orders -->
+  <section class="orders-grid" *ngIf="!isLoading && orders.length > 0">
+
+    <article 
+      class="order-card"
+      *ngFor="let order of orders"
+      [routerLink]="['/orders', order.id]"
+      tabindex="0"
+      aria-label="'Order ' + order.id"
+    >
+
       <div class="card-glow"></div>
-      
-      <div class="card-header">
+
+      <!-- Header -->
+      <header class="card-header">
         <div class="id-group">
-          <span class="label">Order ID</span>
+          <span class="label">Order</span>
           <span class="value">#{{ order.id }}</span>
         </div>
-        <div class="status-badge" [style.background-color]="getStatusColor(order.status) + '15'" [style.color]="getStatusColor(order.status)">
+
+        <div 
+          class="status-badge"
+          [style.background-color]="getStatusColor(order.status) + '15'"
+          [style.color]="getStatusColor(order.status)"
+        >
           <span class="dot" [style.background-color]="getStatusColor(order.status)"></span>
           {{ order.status | titlecase }}
         </div>
-      </div>
+      </header>
 
+      <!-- Body -->
       <div class="card-body">
+
         <div class="info-row">
           <div class="info-item">
-            <span class="label">Placed On</span>
+            <span class="label">Placed</span>
             <span class="value">{{ order.createdAt | date:'mediumDate' }}</span>
           </div>
+
           <div class="info-item">
             <span class="label">Items</span>
-            <span class="value">{{ order.items.length }} Items</span>
+            <span class="value">{{ order.items.length }}</span>
           </div>
         </div>
 
@@ -59,12 +85,16 @@
           <span class="method">{{ formatPaymentMethod(order.paymentMethod) }}</span>
           <span class="amount">{{ order.totalAmount | currency }}</span>
         </div>
+
       </div>
 
-      <div class="card-footer">
+      <!-- Footer -->
+      <footer class="card-footer">
         <span class="view-details">View Details</span>
         <span class="arrow">→</span>
-      </div>
+      </footer>
+
     </article>
-  </div>
-</div>
+
+  </section>
+</section>

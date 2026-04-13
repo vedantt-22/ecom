@@ -82,18 +82,26 @@
     </div>
   </section>
 
-  <section class="features-section container">
-    <div class="features-grid">
-      <div class="feature-card glass-panel" *ngFor="let prop of [
-        {i:'🚚', t:'Fast Delivery', p:'Quick shipping to your doorstep'},
+
+  <footer class="footer">
+  <div class="container">
+
+    <!-- Features Row -->
+    <div class="footer-features">
+      <div class="footer-feature-card glass-panel" *ngFor="let prop of [{i:'🚚', t:'Fast Delivery', p:'Quick shipping to your doorstep'},
         {i:'🔒', t:'Secure Payments', p:'Multiple safe options'},
         {i:'⭐', t:'Quality Items', p:'Curated selection'},
-        {i:'📞', t:'24/7 Support', p:'Always here for you'}
-      ]">
+        {i:'📞', t:'24/7 Support', p:'Always here for you'}]">
         <div class="feature-icon-circle">{{prop.i}}</div>
-        <h3>{{prop.t}}</h3>
-        <p>{{prop.p}}</p>
+
+        <div class="footer-feature-content">
+          <h3>{{prop.t}}</h3>
+          <p>{{prop.p}}</p>
+        </div>
       </div>
     </div>
-  </section>
+
+
+  </div>
+</footer>
 </main>

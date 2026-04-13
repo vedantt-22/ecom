@@ -48,8 +48,10 @@ export class AdminService {
 
   // ── Products ─────────────────────────────────────────────
 
-  getAllProducts(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/admin/products`);
+  getAllProducts(page: number = 1, pageSize: number = 12): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/admin/products`, {
+      params: { page: page.toString(), pageSize: pageSize.toString() }
+    });
   }
 
   getTaxonomyTree(): Observable<any[]> {

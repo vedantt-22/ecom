@@ -1,85 +1,116 @@
-<div class="order-container">
-  <div class="state-view" *ngIf="isLoading">
+<section class="order-container" aria-label="Order Details">
+
+  <!-- Loading -->
+  <section class="state-view" *ngIf="isLoading" aria-live="polite">
     <div class="skeleton-receipt"></div>
-    <p>Retrieving your order details...</p>
-  </div>
+    <p>Retrieving your order...</p>
+  </section>
 
-  <div class="state-view" *ngIf="errorMsg">
+  <!-- Error -->
+  <section class="state-view" *ngIf="errorMsg">
     <div class="error-circle">!</div>
-    <h2>Oops!</h2>
+    <h2>Something went wrong</h2>
     <p>{{ errorMsg }}</p>
-    <button routerLink="/orders" class="btn-primary">Back to My Orders</button>
-  </div>
+    <button routerLink="/orders" class="btn-primary">Back to Orders</button>
+  </section>
 
+  <!-- Main -->
   <main class="order-content fade-in" *ngIf="!isLoading && order">
-    
+
+    <!-- Confirmation -->
     <header class="confirmation-header" *ngIf="isConfirmation">
       <div class="check-animation">
-        <svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="25" fill="none"/><path fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
+        <svg viewBox="0 0 52 52">
+          <circle cx="26" cy="26" r="25"></circle>
+          <path d="M14.1 27.2l7.1 7.2 16.7-16.8"></path>
+        </svg>
       </div>
-      <h1>Order Confirmed!</h1>
-      <p>Thank you for your purchase. We've sent a receipt to your email.</p>
+      <h1>Order Confirmed</h1>
+      <p>Receipt sent to your email.</p>
     </header>
 
+    <!-- Grid -->
     <div class="order-grid">
-      
+
+      <!-- LEFT -->
       <section class="order-main">
-        <div class="glass-card tracking-card">
-          <div class="card-header">
-            <h3>Shipment Tracking</h3>
-            <span class="status-badge" [style.background-color]="getStatusColor(order.status)">
+
+        <!-- Tracking -->
+        <article class="glass-card tracking-card">
+          <header class="card-header">
+            <h3>Tracking</h3>
+            <span class="status-badge"
+              [style.background-color]="getStatusColor(order.status)">
               {{ order.status | titlecase }}
             </span>
-          </div>
-          
+          </header>
+
           <div class="status-timeline">
             <div class="step" [class.active]="order.status === 'pending' || order.status === 'processing' || order.status === 'shipped' || order.status === 'delivered'">
               <div class="node"></div><label>Ordered</label>
             </div>
+
             <div class="step" [class.active]="order.status === 'shipped' || order.status === 'delivered'">
               <div class="node"></div><label>Shipped</label>
             </div>
+
             <div class="step" [class.active]="order.status === 'delivered'">
               <div class="node"></div><label>Delivered</label>
             </div>
           </div>
-        </div>
+        </article>
 
-        <div class="glass-card items-card">
-          <h3>Order Items</h3>
+        <!-- Items -->
+        <article class="glass-card items-card">
+          <h3>Items</h3>
+
           <div class="item-list">
             <div class="order-item" *ngFor="let item of order.items">
-              <img [src]="item.product?.imageUrl || '/images/placeholder.png'" [alt]="item.product?.name || 'Product image'" class="item-thumb">
+
+              <img 
+                [src]="item.product?.imageUrl || '/images/placeholder.png'"
+                [alt]="item.product?.name || 'Product image'"
+                class="item-thumb"
+              >
+
               <div class="item-info">
-                <h4>{{ item.product?.name || 'Product no longer available' }}</h4>
-                <p>Qty: {{ item.quantity }}</p>
+                <h4>{{ item.product?.name || 'Unavailable product' }}</h4>
+                <p>Qty {{ item.quantity }}</p>
               </div>
+
               <div class="item-price">
                 {{ calculateLineTotal(item.priceAtPurchase, item.quantity) | currency }}
               </div>
+
             </div>
           </div>
-        </div>
+        </article>
+
       </section>
 
+      <!-- RIGHT -->
       <aside class="order-aside">
+
         <div class="glass-card info-card">
           <div class="info-group">
-            <label>Order Number</label>
+            <label>Order</label>
             <p>#ORD-{{ order.id }}</p>
           </div>
+
           <div class="info-group">
-            <label>Date Placed</label>
+            <label>Date</label>
             <p>{{ order.createdAt | date:'mediumDate' }}</p>
           </div>
+
           <div class="info-group">
-            <label>Payment Method</label>
+            <label>Payment</label>
             <p>{{ formatPaymentMethod(order.paymentMethod) }}</p>
           </div>
         </div>
 
         <div class="glass-card address-card">
-          <h3>Shipping Address</h3>
+          <h3>Shipping</h3>
+
           <address *ngIf="order.shippingAddress as addr; else noAddress">
             <strong>{{ addr.fullName }}</strong><br>
             {{ addr.addressLine1 }}<br>
@@ -87,8 +118,9 @@
             {{ addr.city }}, {{ addr.state }} {{ addr.pincode }}<br>
             <span class="phone">📞 {{ addr.phone }}</span>
           </address>
+
           <ng-template #noAddress>
-            <p>No shipping address available.</p>
+            <p>No address available</p>
           </ng-template>
         </div>
 
@@ -97,24 +129,30 @@
             <span>Subtotal</span>
             <span>{{ order.totalAmount | currency }}</span>
           </div>
+
           <div class="summary-row">
             <span>Shipping</span>
             <span>{{ 0 | currency }}</span>
           </div>
-          <hr>
+
           <div class="summary-row total">
-            <span>Grand Total</span>
+            <span>Total</span>
             <span>{{ order.totalAmount | currency }}</span>
           </div>
+
           <button class="btn-outline full-width" onclick="window.print()">
-            <span class="icon">🖨️</span> Print Invoice
+            🖨️ Print Invoice
           </button>
         </div>
+
       </aside>
+
     </div>
 
+    <!-- Footer -->
     <footer class="order-footer">
       <button routerLink="/products" class="btn-text">← Continue Shopping</button>
     </footer>
+
   </main>
-</div>
+</section>

@@ -37,19 +37,37 @@ function deleteImageFile(filename: string | null): void {
 }
 
 export class ProductService {
-    async getAllProducts() {
-        const products = await productRepo().find({
+    async getAllProducts(page: number = 1, pageSize: number = 12) {
+        const skip = (page - 1) * pageSize;
+        
+        const [products, total] = await productRepo().findAndCount({
             relations: ["subCategory", "subCategory.category", "subCategory.category.type"],
             order: { createdAt: "DESC" },
+            skip,
+            take: pageSize,
         });
+        
         const data = products.map((p) => ({
             ...p,
             imageUrl: buildImageUrl(p.imagePath),
         }));
+        
+        const totalPages = Math.ceil(total / pageSize);
+        
         return {
             success: true,
             statusCode: 200,
-            data,
+            data: {
+                items: data,
+                pagination: {
+                    page,
+                    pageSize,
+                    total,
+                    totalPages,
+                    hasNext: page < totalPages,
+                    hasPrev: page > 1,
+                }
+            },
         };
     }
 

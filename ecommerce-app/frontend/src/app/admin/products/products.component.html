@@ -26,7 +26,7 @@
   <main class="product-grid" *ngIf="!isLoading">
     <div class="product-card glass" *ngFor="let product of products">
       <div class="card-image">
-        <img [src]="product.imageCover" [alt]="product.name">
+        <img [src]="product.imageUrl" [alt]="product.name">
         <div class="category-badge">{{ product.subCategory?.name }}</div>
       </div>
       
@@ -47,6 +47,16 @@
       </div>
     </div>
   </main>
+
+  <footer class="admin-pagination-footer" *ngIf="!isLoading && totalPages > 1">
+    <app-pagination 
+      [currentPage]="currentPage" 
+      [totalPages]="totalPages" 
+      [total]="totalProducts"
+      [pageSize]="pageSize"
+      (pageChange)="onPageChange($event)">
+    </app-pagination>
+  </footer>
 
   <div class="drawer-overlay" [class.open]="showForm" (click)="cancelForm()">
     <aside class="side-drawer" (click)="$event.stopPropagation()">

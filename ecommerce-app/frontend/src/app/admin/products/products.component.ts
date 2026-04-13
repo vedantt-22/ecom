@@ -7,11 +7,12 @@ import {
   Validators,
 }                              from '@angular/forms';
 import { AdminService }        from '../../core/services/admin.service';
+import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, PaginationComponent],
   templateUrl: './products.component.html',
   styleUrl: './products.component.css'
 })
@@ -22,6 +23,12 @@ export class ProductsComponent implements OnInit {
   isLoading   = true;
   errorMsg    = '';
   successMsg  = '';
+
+  // Pagination
+  currentPage: number = 1;
+  pageSize: number = 12;
+  totalProducts: number = 0;
+  totalPages: number = 0;
 
   // Form state
   showForm    = false;
@@ -58,13 +65,25 @@ export class ProductsComponent implements OnInit {
 
   loadProducts(): void {
     this.isLoading = true;
-    this.adminService.getAllProducts().subscribe({
-      next: (products) => {
-        this.products  = products;
+    this.adminService.getAllProducts(this.currentPage, this.pageSize).subscribe({
+      next: (response) => {
+        this.products = response.items;
+        this.totalProducts = response.pagination.total;
+        this.totalPages = response.pagination.totalPages;
         this.isLoading = false;
       },
       error: () => { this.isLoading = false; },
     });
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.loadProducts();
+  }
+
+  onPageChange(page: number): void {
+    this.goToPage(page);
   }
 
   loadTaxonomy(): void {

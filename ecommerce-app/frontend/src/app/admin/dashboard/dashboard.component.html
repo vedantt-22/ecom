@@ -1,69 +1,82 @@
 <div class="dashboard-wrapper">
+
   <header class="dashboard-header">
+
     <div class="welcome-text">
       <h1>Command Center</h1>
-      <p class="text-dim">Real-time platform overview and performance metrics.</p>
+      <p class="text-dim">
+        Real-time platform overview and performance metrics.
+      </p>
     </div>
+
     <div class="header-actions">
-      <button class="btn btn-secondary" (click)="ngOnInit()" [disabled]="isLoading">
+      <button 
+        class="btn btn-secondary"
+        (click)="ngOnInit()"
+        [disabled]="isLoading"
+        aria-label="Refresh dashboard data"
+      >
         <span class="refresh-icon" [class.spinning]="isLoading">↻</span>
-        Sync Data
+        <span>Sync Data</span>
       </button>
     </div>
+
   </header>
 
+  <!-- Loading -->
   <div class="stats-grid" *ngIf="isLoading">
     <div class="stat-card skeleton" *ngFor="let i of [1,2,3,4]"></div>
   </div>
 
+  <!-- Data -->
   <main class="stats-grid" *ngIf="!isLoading && stats">
-    
-    <section class="stat-card glass featured" routerLink="/admin/orders">
-      <div class="card-glow"></div>
-      <div class="card-content">
-        <header>
-          <span class="icon-box">💰</span>
-          <span class="label">Total Revenue</span>
-        </header>
-        <div class="value-group">
-          <h2 class="value text-gradient">{{ stats.totalRevenue | currency }}</h2>
-          <span class="trend positive">↑ 12% vs last month</span>
-        </div>
-      </div>
-    </section>
 
-    <section class="stat-card glass" routerLink="/admin/orders">
-      <div class="card-content">
-        <header>
-          <span class="icon-box">📦</span>
-          <span class="label">Total Orders</span>
-        </header>
-        <h2 class="value">{{ stats.totalOrders | number }}</h2>
-        <p class="footer-link">View all orders →</p>
-      </div>
-    </section>
+   <!-- Revenue -->
+<section class="stat-card glass featured" (click)="navigate('/admin/orders')" style="cursor: pointer;">
+  <div class="card-content">
+    <header>
+      <span class="icon-box">💰</span>
+      <span class="label">Total Revenue</span>
+    </header>
+    <div class="value-group">
+      <h2 class="value text-gradient">{{ stats.totalRevenue | currency }}</h2>
+      <span class="trend positive">↑ 12% vs last month</span>
+    </div>
+  </div>
+</section>
 
-    <section class="stat-card glass" routerLink="/admin/products">
-      <div class="card-content">
-        <header>
-          <span class="icon-box">🏷️</span>
-          <span class="label">Active Products</span>
-        </header>
-        <h2 class="value">{{ stats.totalProducts | number }}</h2>
-        <p class="footer-link">Manage inventory →</p>
-      </div>
-    </section>
+<!-- Orders -->
+<section class="stat-card glass" (click)="navigate('/admin/orders')" style="cursor: pointer;">
+  <div class="card-content">
+    <header>
+      <span class="icon-box">📦</span>
+      <span class="label">Total Orders</span>
+    </header>
+    <h2 class="value">{{ stats.totalOrders | number }}</h2>
+    <p class="footer-link">View all orders →</p>
+  </div>
+</section>
 
-    <section class="stat-card glass" routerLink="/admin/users">
-      <div class="card-content">
-        <header>
-          <span class="icon-box">👥</span>
-          <span class="label">Total Customers</span>
-        </header>
-        <h2 class="value">{{ stats.totalUsers | number }}</h2>
-        <p class="footer-link">User directory →</p>
-      </div>
-    </section>
+<!-- Products -->
+<section class="stat-card glass" (click)="navigate('/admin/products')" style="cursor: pointer;">
+  <div class="card-content">
+    <header>
+      <span class="icon-box">🏷️</span>
+      <span class="label">Active Products</span>
+    </header>
+    <h2 class="value">{{ stats.totalProducts | number }}</h2>
+    <p class="footer-link">Manage inventory →</p>
+  </div>
+</section>
 
-  </main>
-</div>
+<!-- Users -->
+<section class="stat-card glass" (click)="navigate('/admin/customers')" style="cursor: pointer;">
+  <div class="card-content">
+    <header>
+      <span class="icon-box">👥</span>
+      <span class="label">Total Customers</span>
+    </header>
+    <h2 class="value">{{ stats.totalUsers | number }}</h2>
+    <p class="footer-link">User directory →</p>
+  </div>
+</section>

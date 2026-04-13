@@ -4,7 +4,10 @@ export interface ValidationError {
 }
 
 export function validateEmail(email: string): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    // More robust email validation pattern
+    // Supports: user+tag@domain.co.uk, user_name@domain.com, etc.
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && 
+           email.length <= 254; // RFC 5321 max email length
 }
 
 export function validatePassword(password: string): boolean {

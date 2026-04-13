@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule }      from '@angular/common';
-import { RouterLink }        from '@angular/router';
+import { Router, RouterLink }        from '@angular/router';
 import { AdminService }      from '../../core/services/admin.service';
 
 @Component({
   selector:    'app-dashboard',
   standalone:  true,
-  imports:     [CommonModule, RouterLink],
+  imports:     [CommonModule],
   templateUrl: './dashboard.component.html',
   styleUrls:   ['./dashboard.component.css'],
 })
@@ -15,7 +15,7 @@ export class DashboardComponent implements OnInit {
   stats:     any   = null;
   isLoading = true;
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private router: Router) {}
 
   ngOnInit(): void {
     this.adminService.getDashboardStats().subscribe({
@@ -25,5 +25,9 @@ export class DashboardComponent implements OnInit {
       },
       error: () => { this.isLoading = false; },
     });
+  }
+
+  navigate(path: string): void {
+    this.router.navigate([path]);
   }
 }

@@ -16,9 +16,12 @@ const resetRepo = () => AppDataSource.getRepository(PasswordResetCode);
 
 export class AuthService {
     async register(name: string, email: string, password: string) {
+        // Trim email before validation to prevent whitespace issues
+        const trimmedEmail = email?.trim() ?? "";
+        
         const errors = validateRegistrationInput(
             name ?? "",
-            email ?? "",
+            trimmedEmail,
             password ?? ""
         );
 
@@ -27,7 +30,7 @@ export class AuthService {
         }
 
         const cleanName = validateInput(name);
-        const cleanEmail = validateInput(email).toLowerCase();
+        const cleanEmail = validateInput(trimmedEmail).toLowerCase();
         
         // Check if user exists BEFORE hashing (saves CPU time)
         const existing = await userRepo().findOne({

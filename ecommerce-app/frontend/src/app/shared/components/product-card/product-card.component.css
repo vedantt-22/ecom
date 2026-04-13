@@ -157,6 +157,14 @@
   box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
 }
 
+.add-to-cart-btn:disabled,
+.add-to-cart-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.02);
+  border-color: var(--glass-border);
+}
+
 .add-to-cart-btn.success {
   background: #10b981;
   border-color: #10b981;

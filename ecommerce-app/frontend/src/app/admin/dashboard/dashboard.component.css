@@ -1,148 +1,307 @@
-/* --- Dashboard Layout --- */
+/* ================================
+   DESIGN TOKENS
+================================ */
+:host {
+  --bg: #0b0f17;
+  --card-bg: rgba(20,22,30,0.7);
+
+  --text-main: #e5e7eb;
+  --text-dim: #9ca3af;
+
+  --primary: #8b5cf6;
+  --gradient: linear-gradient(135deg,#8b5cf6,#3b82f6,#06b6d4);
+
+  --border: rgba(255,255,255,0.08);
+
+  --radius-lg: 1.25rem;
+  --radius-md: 0.75rem;
+
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+
+  --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+
+  display: block;
+  background: var(--bg);
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+/* ================================
+   LAYOUT
+================================ */
 .dashboard-wrapper {
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: auto;
 }
 
 .dashboard-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 3rem;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
+/* TYPOGRAPHY FIX */
 .welcome-text h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  font-weight: 700;
 }
 
-/* --- Bento Grid --- */
+.text-dim {
+  font-size: 0.875rem;
+  color: var(--text-dim);
+}
+
+/* ================================
+   GRID
+================================ */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
   gap: 1.5rem;
 }
 
-/* Featured card takes more space on wide screens */
 @media (min-width: 1024px) {
-  .stat-card.featured {
+  .featured {
     grid-column: span 2;
   }
 }
 
-/* --- Stat Card Design --- */
+/* ================================
+   CARD
+================================ */
 .stat-card {
-  position: relative;
-  min-height: 200px;
-  border-radius: 24px;
-  padding: 2rem;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  overflow: hidden;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+
+  display: flex;
+  flex-direction: column;
+
+  transition: var(--transition);
 }
 
+/* 🔥 HUMANIZED HOVER */
 .stat-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  border-color: var(--primary);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-4px);
+  border-color: rgba(139,92,246,0.4);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-.card-glow {
-  position: absolute;
-  top: 0; right: 0;
-  width: 150px; height: 150px;
-  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-
-.stat-card:hover .card-glow {
-  opacity: 1;
-}
-
-/* --- Content Styling --- */
+/* ================================
+   CONTENT
+================================ */
 .stat-card header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .icon-box {
-  width: 48px;
-  height: 48px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.05);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
 }
 
+/* LABEL */
 .label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-dim);
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--text-dim);
 }
 
+/* VALUE (FIXED SCALE) */
 .value {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin: 0.5rem 0;
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 .featured .value {
-  font-size: 3.5rem;
+  font-size: 2.5rem;
 }
 
+/* GRADIENT TEXT */
+.text-gradient {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ================================
+   TREND
+================================ */
 .trend {
-  font-size: 0.85rem;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: rgba(16, 185, 129, 0.1);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.trend.positive {
   color: #10b981;
 }
 
+/* ================================
+   FOOTER LINK
+================================ */
 .footer-link {
-  margin-top: 1.5rem;
-  font-size: 0.85rem;
+  margin-top: auto;
+  font-size: 0.8rem;
   color: var(--primary);
-  font-weight: 600;
   opacity: 0.7;
-  transition: opacity 0.2s;
 }
 
 .stat-card:hover .footer-link {
   opacity: 1;
 }
 
-/* --- Skeleton Animation --- */
+/* ================================
+   BUTTON
+================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+
+  font-size: 0.85rem;
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--gradient);
+  color: white;
+}
+
+
+/* ================================
+   USERS STAT CARD
+================================ */
+.stat-card {
+  background: rgba(20, 22, 30, 0.7);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  min-height: 180px;
+
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* 🔥 Clean hover (no overdesign) */
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(139,92,246,0.4);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+}
+
+/* ================================
+   HEADER
+================================ */
+.stat-card header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ICON */
+.icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.75rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.2rem;
+
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* LABEL */
+.label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+/* ================================
+   VALUE
+================================ */
+.value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 0.75rem;
+  color: #e5e7eb;
+}
+
+/* ================================
+   FOOTER LINK
+================================ */
+.footer-link {
+  margin-top: auto;
+
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  color: #8b5cf6;
+  opacity: 0.7;
+
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover .footer-link {
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+/* ================================
+   SKELETON
+================================ */
 .skeleton {
+  height: 180px;
+  border-radius: var(--radius-lg);
   background: linear-gradient(
     90deg,
-    var(--bg-card) 25%,
-    rgba(255, 255, 255, 0.05) 50%,
-    var(--bg-card) 75%
+    rgba(255,255,255,0.05) 25%,
+    rgba(255,255,255,0.1) 50%,
+    rgba(255,255,255,0.05) 75%
   );
   background-size: 200% 100%;
-  animation: skeleton-loading 1.5s infinite;
+  animation: shimmer 1.5s infinite;
 }
 
-@keyframes skeleton-loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+@keyframes shimmer {
+  to { background-position: -200% 0; }
 }
 
-/* --- Refresh Spin --- */
+/* ================================
+   SPINNER
+================================ */
 .spinning {
-  display: inline-block;
   animation: spin 1s linear infinite;
 }
 

@@ -114,7 +114,10 @@ updateOrderStatus = asyncHandler(async (req: Request, res: Response): Promise<vo
   // The difference is only at the route level (admin vs public).
 
   adminGetAllProducts = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const result = await productService.getAllProducts();
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const pageSize = Math.max(1, Math.min(100, Number(req.query.pageSize) || 12));
+    
+    const result = await productService.getAllProducts(page, pageSize);
     res.status(result.statusCode).json(result.data);
   });
 

@@ -1,47 +1,68 @@
-<div class="product-explorer">
+<section class="product-explorer" aria-label="Product Explorer">
+
+  <!-- Header -->
   <header class="explorer-header">
+    
     <div class="search-container">
-      <div class="search-input-wrapper">
-        <span class="search-icon">🔍</span>
+      <div class="search-input-wrapper" role="search">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+
         <input 
           type="text" 
           [(ngModel)]="searchQuery" 
           (keyup.enter)="onSearch()"
-          placeholder="Search for products, brands..."
+          placeholder="Search products, brands, categories..."
           aria-label="Search products"
         />
-        <button class="btn-search" (click)="onSearch()">Search</button>
+
+        <button class="btn-search" (click)="onSearch()">
+          <span>Search</span>
+        </button>
       </div>
     </div>
-    
+
     <div class="results-meta">
-      <p *ngIf="!isLoading">Showing <strong>{{total}}</strong> products</p>
+      <p *ngIf="!isLoading">
+        Showing <strong>{{total}}</strong> products
+      </p>
+
       <div class="sort-controls">
         <select [(ngModel)]="sortBy" (change)="onFilterChange()">
-          <option value="createdAt">Newest First</option>
+          <option value="createdAt">Newest</option>
           <option value="price">Price</option>
-          <option value="name">Alphabetical</option>
+          <option value="name">A–Z</option>
         </select>
-        <button class="btn-sort-order" (click)="sortOrder = (sortOrder === 'ASC' ? 'DESC' : 'ASC'); onFilterChange()">
+
+        <button 
+          class="btn-sort-order"
+          aria-label="Toggle sort order"
+          (click)="sortOrder = (sortOrder === 'ASC' ? 'DESC' : 'ASC'); onFilterChange()">
           {{ sortOrder === 'ASC' ? '↑' : '↓' }}
         </button>
       </div>
     </div>
+
   </header>
 
+  <!-- Layout -->
   <div class="explorer-layout">
-    <aside class="filter-sidebar">
+
+    <!-- Sidebar -->
+    <aside class="filter-sidebar" aria-label="Filters">
       <div class="sidebar-sticky">
+
         <div class="filter-header">
           <h3>Filters</h3>
-          <button *ngIf="hasActiveFilters()" class="btn-clear" (click)="clearFilters()">Clear All</button>
+          <button *ngIf="hasActiveFilters()" class="btn-clear" (click)="clearFilters()">Clear</button>
         </div>
 
         <div class="filter-section">
           <label>Type</label>
           <select [(ngModel)]="selectedTypeId" (change)="selectedCategoryId = undefined; selectedSubCategoryId = undefined; onFilterChange()">
             <option [ngValue]="undefined">All Types</option>
-            <option *ngFor="let type of taxonomyTree; trackBy: trackById" [value]="type.id">{{type.name}}</option>
+            <option *ngFor="let type of taxonomyTree; trackBy: trackById" [value]="type.id">
+              {{type.name}}
+            </option>
           </select>
         </div>
 
@@ -49,7 +70,9 @@
           <label>Category</label>
           <select [(ngModel)]="selectedCategoryId" (change)="selectedSubCategoryId = undefined; onFilterChange()">
             <option [ngValue]="undefined">All Categories</option>
-            <option *ngFor="let cat of filteredCategories; trackBy: trackById" [value]="cat.id">{{cat.name}}</option>
+            <option *ngFor="let cat of filteredCategories; trackBy: trackById" [value]="cat.id">
+              {{cat.name}}
+            </option>
           </select>
         </div>
 
@@ -66,30 +89,37 @@
           <label class="toggle-container">
             <input type="checkbox" [(ngModel)]="inStockOnly" (change)="onFilterChange()" />
             <span class="checkmark"></span>
-            In Stock Only
+            In stock only
           </label>
         </div>
+
       </div>
     </aside>
 
+    <!-- Main Content -->
     <main class="product-grid-container">
+
+      <!-- Loading -->
       <div class="loader-overlay" *ngIf="isLoading">
         <div class="spinner"></div>
         <p>Curating products...</p>
       </div>
 
+      <!-- Error -->
       <div class="error-card" *ngIf="errorMsg && !isLoading">
         <p>{{ errorMsg }}</p>
         <button (click)="onFilterChange()">Retry</button>
       </div>
 
+      <!-- Empty -->
       <div class="empty-state" *ngIf="!isLoading && products.length === 0">
         <span class="empty-icon">📦</span>
         <h3>No products found</h3>
-        <p>Try adjusting your filters or search terms.</p>
+        <p>Try adjusting filters or search terms.</p>
         <button class="btn-primary" (click)="clearFilters()">Reset Filters</button>
       </div>
 
+      <!-- Products -->
       <div class="product-grid" *ngIf="!isLoading && products.length > 0">
         <app-product-card 
           *ngFor="let product of products; trackBy: trackById" 
@@ -98,6 +128,7 @@
         </app-product-card>
       </div>
 
+      <!-- Pagination -->
       <footer class="grid-footer" *ngIf="!isLoading && totalPages > 1">
         <app-pagination 
           [currentPage]="currentPage" 
@@ -105,6 +136,7 @@
           (pageChange)="onPageChange($event)">
         </app-pagination>
       </footer>
+
     </main>
   </div>
-</div>
+</section>

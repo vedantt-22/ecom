@@ -9,12 +9,17 @@ function passwordStrengthValidator(control: AbstractControl): ValidationErrors |
   const value = control.value as string;
   if (!value) return null;
 
+  // Must match backend requirements:
+  // - At least 8 characters
+  // - Uppercase letter
+  // - Lowercase letter
+  // - One numeric digit
   const hasUpperCase = /[A-Z]/.test(value);
   const hasLowerCase = /[a-z]/.test(value);
   const hasNumeric = /[0-9]/.test(value);
-  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]+/.test(value);
+  const isLongEnough = value.length >= 8;
 
-  if (!hasUpperCase || !hasLowerCase || !hasNumeric || !hasSpecialChar) {
+  if (!isLongEnough || !hasUpperCase || !hasLowerCase || !hasNumeric) {
     return { passwordStrength: true };
   }
   return null;
@@ -56,7 +61,7 @@ export class RegisterComponent implements OnInit {
     this.registerForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6), passwordStrengthValidator]],
+      password: ['', [Validators.required, Validators.minLength(8), passwordStrengthValidator]],
       confirmPassword: ['', [Validators.required]]
     }, { validators: passwordMatchValidator });
   }
@@ -81,8 +86,13 @@ export class RegisterComponent implements OnInit {
       error: (err) => {
         this.isLoading = false;
         
-        // Handle backend validation errors
-        if (err.error?.errors) {
+        // Handle backend validation errors (array of {field, message} objects)
+        if (err.error?.errors && Array.isArray(err.error.errors)) {
+          err.error.errors.forEach((error: any) => {
+            this.backendErrors[error.field] = error.message;
+          });
+        } else if (err.error?.errors) {
+          // If errors is already an object, use it directly
           this.backendErrors = err.error.errors;
         } else {
           this.errorMsg = err.error?.message || 'Registration failed. Please try again.';
@@ -98,7 +108,7 @@ export class RegisterComponent implements OnInit {
       if (control.errors['required']) return `${fieldName} is required.`;
       if (control.errors['email']) return 'Invalid email format.';
       if (control.errors['minlength']) return `${fieldName} must be at least ${control.errors['minlength'].requiredLength} characters.`;
-      if (control.errors['passwordStrength']) return 'Password must contain uppercase, lowercase, number, and special character.';
+      if (control.errors['passwordStrength']) return 'Password must contain uppercase, lowercase, and numeric characters.';
     }
 
     if (fieldName === 'confirmPassword' && this.registerForm.touched) {

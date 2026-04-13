@@ -41,7 +41,7 @@
           </div>
           <div class="password-hint" *ngIf="registerForm.get('password')?.dirty">
              <small [class.valid]="!registerForm.get('password')?.errors?.['passwordStrength']">
-               Must include A-z, 0-9, & symbols
+               Min 8 chars: A-Z, a-z, 0-9
              </small>
           </div>
           <span class="error-text">{{ getFieldError('password') }}</span>

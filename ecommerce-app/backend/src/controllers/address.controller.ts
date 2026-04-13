@@ -16,18 +16,27 @@ export class AddressController {
       city, state, pincode, isDefault,
     } = req.body;
 
+    console.log('Creating address with payload:', req.body);
+
     if (!label || !fullName || !phone || !addressLine1 || !city || !state || !pincode) {
+      console.warn('Missing required fields:', { label, fullName, phone, addressLine1, city, state, pincode });
       res.status(400).json({ error: "All required address fields must be provided." });
       return;
     }
 
-    const data = await addressService.createAddress(req.user!.id, {
-      label, fullName, phone,
-      addressLine1, addressLine2,
-      city, state, pincode, isDefault,
-    });
+    try {
+      const data = await addressService.createAddress(req.user!.id, {
+        label, fullName, phone,
+        addressLine1, addressLine2,
+        city, state, pincode, isDefault,
+      });
 
-    res.status(201).json(data);
+      console.log('Address created successfully:', data);
+      res.status(201).json(data);
+    } catch (error: any) {
+      console.error('Address creation service error:', error.message);
+      res.status(400).json({ error: error.message });
+    }
   });
 
   updateAddress = asyncHandler(async (req: Request, res: Response): Promise<void> => {
