@@ -28,8 +28,6 @@ const options: StrategyOptions = {
 passport.use(
   new JwtStrategy(
     options,
-    // FIX: The order must be (req, payload, done) 
-    // Note: Some versions/types might expect (payload, done) if passReqToCallback is false.
     async (req: Request, payload: any, done: (err: any, user?: any, info?: any) => void) => {
       try {
         const { jti, id } = payload;
@@ -47,7 +45,6 @@ passport.use(
           .getRepository(User)
           .findOne({
             where: { id },
-            // Only select necessary fields for security
             select: ["id", "name", "email", "role", "isLocked"],
           });
 

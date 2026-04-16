@@ -160,7 +160,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     if (!this.selectedCategoryId) return [];
     return this.filteredCategories.find(c => c.id === this.selectedCategoryId)?.subCategories ?? [];
   }
-
+  
   hasActiveFilters(): boolean {
     return !!(this.searchQuery || this.selectedTypeId || this.selectedCategoryId || this.minPrice || this.maxPrice || this.inStockOnly);
   }

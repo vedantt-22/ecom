@@ -1,21 +1,18 @@
 export interface SessionInfo {
-  userId:    number;   // which user this session belongs to
-  username:  string;   // their email address
-  role:      string;   // "customer" or "admin"
-  ip:        string;   // what IP address they logged in from
-  userAgent: string;   // what browser/device they used
-  createdAt: Date;     // when this session was created
+  userId:    number;   
+  username:  string;  
+  role:      string;   
+  ip:        string;  
+  userAgent: string;   
+  createdAt: Date;     
 }
 
 class SessionStore {
 
-  // Map<jti_string, SessionInfo>
   private sessions: Map<string, SessionInfo> = new Map();
 
-  // Map<userId_number, Set<jti_string>>
   private userIndex: Map<number, Set<string>> = new Map();
 
-  // ── CREATE ────────────────────────────────────────────────
   // Called once when a user successfully logs in.
 
   create(jti: string, data: SessionInfo): void {
@@ -28,12 +25,10 @@ class SessionStore {
     this.userIndex.get(data.userId)!.add(jti);
   }
 
-  // ── READ ONE ──────────────────────────────────────────────
   get(jti: string): SessionInfo | undefined {
     return this.sessions.get(jti);
   }
 
-  // ── READ ALL FOR USER ─────────────────────────────────────
   getForUser(userId: number): Array<{ jti: string } & SessionInfo> {
     // Get the Set of jtis for this user
     const jtis = this.userIndex.get(userId);
@@ -52,8 +47,6 @@ class SessionStore {
 
     return result;
   }
-
-  // ── DELETE ONE ────────────────────────────────────────────
   // Called on normal logout (single device).
 
   delete(jti: string): void {
@@ -83,9 +76,6 @@ class SessionStore {
     return this.sessions.size;
   }
 
-  
-  // ── DELETE ALL FOR USER ───────────────────────────────────
-
   deleteAllForUser(userId: number): void {
     const jtis = this.userIndex.get(userId);
     if (!jtis) return;
@@ -98,8 +88,6 @@ class SessionStore {
     // Remove the user's entire entry from the index
     this.userIndex.delete(userId);
   }
-
-  // ── UTILITY ───────────────────────────────────────────────
 
   has(jti: string): boolean {
     return this.sessions.has(jti);
